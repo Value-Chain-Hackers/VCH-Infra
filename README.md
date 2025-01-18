@@ -74,4 +74,114 @@ mindmap
         Address: lms-tutor.valuechainhackers.xyz:::notReady
 ```
 
+here is an overview
 
+```mermaid
+
+classDiagram
+  class Server {
+    Name: Value Chain Hacker Main Server
+    IP: 192.168.1.100
+    Status: Active
+    Configuration: Dockerized Services
+  }
+
+  class Openwebui {
+    Name: Openwebui
+    Purpose: AI Platform
+    IP: 192.168.1.101
+    Status: Active
+  }
+
+  class Coolify {
+    Name: Coolify
+    Purpose: App Hosting
+    IP: 192.168.1.102
+    Status: Maintenance
+  }
+
+  class Nextcloud {
+    Name: Nextcloud
+    Purpose: File Sharing Server
+    IP: 192.168.1.103
+    Status: Active
+  }
+
+  class WorkAdventure {
+    Name: Work Adventure
+    Purpose: Virtual Workspace
+    IP: 192.168.1.104
+    Status: Active
+  }
+
+  class n8n {
+    Name: n8n
+    Purpose: Workflow Automation
+    IP: 192.168.1.105
+    Status: Active
+  }
+
+  class PositWorkbench {
+    Name: Posit Workbench
+    Purpose: Data Science Platform
+    IP: 192.168.1.106
+    Status: Maintenance
+  }
+
+  class RStudioServer {
+    Name: RStudio Server
+    Purpose: Data Science IDE
+    IP: 192.168.1.107
+    Status: Active
+  }
+
+  class JupyterHub {
+    Name: JupyterHub
+    Purpose: Notebook Server
+    IP: 192.168.1.108
+    Status: Active
+  }
+
+  class Mattermost {
+    Name: Mattermost
+    Purpose: Team Communication
+    IP: 192.168.1.109
+    Status: Active
+  }
+
+  class CrawlAI {
+    Name: Crawl A.I
+    Purpose: Web Crawling and Data Scraping
+    IP: 192.168.1.110
+    Status: Maintenance
+  }
+
+  class CrewAI {
+    Name: Crew A.I
+    Purpose: Community AI Backend
+    IP: 192.168.1.111
+    Status: Active
+  }
+
+  class LMSTutor {
+    Name: LMS Tutor
+    Purpose: Learning Management System
+    IP: 192.168.1.112
+    Status: Development
+  }
+
+  %% Relationships
+  Server <|-- Openwebui
+  Server <|-- Coolify
+  Server <|-- Nextcloud
+  Server <|-- WorkAdventure
+  Server <|-- n8n
+  Server <|-- PositWorkbench
+  Server <|-- RStudioServer
+  Server <|-- JupyterHub
+  Server <|-- Mattermost
+  Server <|-- CrawlAI
+  Server <|-- CrewAI
+  Server <|-- LMSTutor
+
+```
