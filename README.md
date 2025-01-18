@@ -185,3 +185,22 @@ classDiagram
   Server <|-- LMSTutor
 
 ```
+
+
+```mermaid
+| **Service Name**       | **Purpose**                          | **Address**                                                    | **Status**       | **Checker** |
+|-------------------------|--------------------------------------|----------------------------------------------------------------|------------------|-------------|
+| **Openwebui**          | AI Platform                         | [openwebui.valuechainhackers.xyz](https://openwebui.valuechainhackers.xyz)    | Active           | ✅           |
+| **Coolify**            | App Hosting                         | [coolify.valuechainhackers.xyz](https://coolify.valuechainhackers.xyz)      | Maintenance      | ❌           |
+| **Nextcloud**          | File Sharing Server                 | [nextcloud.valuechainhackers.xyz](https://nextcloud.valuechainhackers.xyz)    | Active           | ✅           |
+| **Work Adventure**     | Virtual Workspace                   | [workadventure.valuechainhackers.xyz](https://workadventure.valuechainhackers.xyz) | Active           | ✅           |
+| **n8n**                | Workflow Automation                 | [n8n.valuechainhackers.xyz](https://n8n.valuechainhackers.xyz)              | Active           | ✅           |
+| **Posit Workbench**    | Data Science Platform               | [positworkbench.valuechainhackers.xyz](https://positworkbench.valuechainhackers.xyz) | Maintenance      | ❌           |
+| **RStudio Server**     | Data Science IDE                    | [rstudio.valuechainhackers.xyz](https://rstudio.valuechainhackers.xyz)      | Active           | ✅           |
+| **JupyterHub**         | Notebook Server                     | [jupyterhub.valuechainhackers.xyz](https://jupyterhub.valuechainhackers.xyz) | Active           | ✅           |
+| **Mattermost**         | Team Communication                  | [mattermost.valuechainhackers.xyz](https://mattermost.valuechainhackers.xyz) | Active           | ✅           |
+| **Crawl A.I**          | Web Crawling and Data Scraping      | [crawlai.valuechainhackers.xyz](https://crawlai.valuechainhackers.xyz)      | Maintenance      | ❌           |
+| **Crew A.I**           | Community AI Backend                | [crewai.valuechainhackers.xyz](https://crewai.valuechainhackers.xyz)        | Active           | ✅           |
+| **LMS Tutor**          | Learning Management System          | [lms-tutor.valuechainhackers.xyz](https://lms-tutor.valuechainhackers.xyz)  | Development      | ❌           |
+```
+
