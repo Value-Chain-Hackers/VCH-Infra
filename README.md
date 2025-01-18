@@ -186,8 +186,6 @@ classDiagram
 
 ```
 
-
-```mermaid
 | **Service Name**       | **Purpose**                          | **Address**                                                    | **Status**       | **Checker** |
 |-------------------------|--------------------------------------|----------------------------------------------------------------|------------------|-------------|
 | **Openwebui**          | AI Platform                         | [openwebui.valuechainhackers.xyz](https://openwebui.valuechainhackers.xyz)    | Active           | ✅           |
@@ -202,5 +200,4 @@ classDiagram
 | **Crawl A.I**          | Web Crawling and Data Scraping      | [crawlai.valuechainhackers.xyz](https://crawlai.valuechainhackers.xyz)      | Maintenance      | ❌           |
 | **Crew A.I**           | Community AI Backend                | [crewai.valuechainhackers.xyz](https://crewai.valuechainhackers.xyz)        | Active           | ✅           |
 | **LMS Tutor**          | Learning Management System          | [lms-tutor.valuechainhackers.xyz](https://lms-tutor.valuechainhackers.xyz)  | Development      | ❌           |
-```
 
