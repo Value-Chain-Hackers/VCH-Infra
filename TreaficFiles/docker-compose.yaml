@@ -1,0 +1,1293 @@
+
+services:
+
+# ===================================================
+# Changelog for Docker Compose Configuration
+# ===================================================
+# Version 0.9 - 12/01
+# - Updated Nextcloud configuration:
+#   - Added accurate database connection details for MariaDB.
+#   - Specified separate volumes for application files and user data.
+#   - Highlighted Redis as an optional dependency for caching.
+# - Added detailed database connection information for PostgreSQL and MariaDB:
+#   - Host, Port, User, Password, and Database name for easier integration.
+# - Refined shared volume mappings:
+#   - Ensured all services requiring persistent data have proper volume paths.
+# - Enhanced Langfuse configuration:
+#   - Added PostgreSQL connection URL for integration with `db_coolify`.
+# - Improved Traefik service notes for routing configuration clarity.
+# - Verified service dependencies and documented optional components.
+# - Added comments to the file
+
+# ===================================================
+# Changelog for Docker Compose Configuration
+# ===================================================
+# Version 0.9.1 - [12/01/2025]
+# - Fixed Redis configuration:
+#   - Consolidated Redis into a single service.
+#   - Updated dependent services (e.g., Nextcloud, Coolify) to include `REDIS_HOST`, `REDIS_PORT`, and `REDIS_PASSWORD`.
+# - Updated PostgreSQL database configurations:
+#   - Added `DATABASE_URL` for dependent services like Langfuse and Coolify.
+#   - Verified proper mapping to `db_coolify` and `mattermost_db`.
+# - Fixed MariaDB configurations:
+#   - Corrected environment variables for Nextcloud, Dolibarr, and FireflyIII.
+#   - Ensured `MYSQL_HOST` points to the correct database service (`db`).
+# - Added missing volumes:
+#   - Defined `jupyterhub_data` and `jupyterhub_users` for JupyterHub.
+# - Updated Nextcloud settings:
+#   - Fixed Redis and MariaDB references in environment variables.
+#   - Verified persistent storage volumes.
+# - Validated Elasticsearch-Kibana connections:
+#   - Ensured Kibana references Elasticsearch correctly.
+# - General enhancements:
+#   - Improved Traefik labels and ensured all services are correctly routed.
+#   - Verified that all services have access to their required dependencies.
+
+
+# CVE: trying to get juypter notebooks to work, added new config file in main srv folder
+# CVE: allow all to login
+# CVE 1.1 : Checking RStudio Project in full;
+# Cve 1.11 : Rstudio Doesn't work well with hugo, intergrating. 
+# cve 1.12 @ 14/01/2024 20:40 removed logstash
+
+
+
+# ===================================================
+# Notes for Future Integration
+# ===================================================
+# - Ensure that any new services requiring Redis, PostgreSQL, or MariaDB explicitly reference the correct credentials.
+# - Volumes:
+#   - All services needing persistent storage should have their volumes declared in the `volumes` section.
+# - Networks:
+#   - New services should join the `ainet` network with a unique static IP if required.
+# - Security:
+#   - Ensure sensitive environment variables like passwords are handled securely and not hardcoded where possible.
+
+
+
+# Docker Compose Configuration for Value Chain Hackers
+# This file defines a variety of services, their dependencies, and shared volumes.
+# Key Features:
+# - Traefik for routing and SSL management.
+# - AI, data processing, collaboration tools, and database integration.
+# - Explicit dependencies and shared volumes for persistent data.
+# - Database connection information for easier future integrations.
+
+# Service Overview:
+# 1. traefik:
+#    - Purpose: Reverse proxy with HTTPS and routing support.
+#    - Static IP: ${AI_NETWORK}.250
+#    - Dependencies: None.
+#    - Shared Volumes: None.
+
+# 2. http:
+#    - Purpose: Debugging tool for HTTP requests.
+#    - Static IP: ${AI_NETWORK}.222
+#    - Dependencies: Traefik for routing.
+#    - Shared Volumes: None.
+
+# 3. ollama:
+#    - Purpose: AI service providing advanced AI interactions.
+#    - Static IP: ${AI_NETWORK}.240
+#    - Dependencies: None.
+#    - Shared Volumes: None.
+
+# 4. openwebui:
+#    - Purpose: Web UI for AI operations and RAG integration.
+#    - Static IP: ${AI_NETWORK}.239
+#    - Dependencies: Traefik for routing.
+#    - Shared Volumes:
+#      - ${AI_DATA}/openwebui:/data
+
+# 5. kotaemon:
+#    - Purpose: AI assistant and model-testing tool.
+#    - Static IP: ${AI_NETWORK}.238
+#    - Dependencies: redis (caching).
+#    - Shared Volumes: None.
+
+# 6. searxng:
+#    - Purpose: Open-source metasearch engine.
+#    - Static IP: ${AI_NETWORK}.245
+#    - Dependencies: Traefik for routing.
+#    - Shared Volumes:
+#      - ${AI_DATA}/searxng:/etc/searxng
+
+# 7. pipelines:
+#    - Purpose: Pipeline orchestration tool.
+#    - Static IP: ${AI_NETWORK}.232
+#    - Dependencies: None.
+#    - Shared Volumes: None.
+
+# 8. neo4j:
+#    - Purpose: Graph database for visualizing relationships.
+#    - Static IP: ${AI_NETWORK}.253
+#    - Dependencies: None.
+#    - Shared Volumes:
+#      - ${AI_DATA}/neo4j/data:/data
+#      - ${AI_DATA}/neo4j/logs:/logs
+
+# 9. redis:
+#    - Purpose: In-memory database for caching and messaging.
+#    - Static IP: ${AI_NETWORK}.213
+#    - Dependencies: None.
+#    - Shared Volumes: None.
+
+# 10. mattermost_db (PostgreSQL):
+#     - Purpose: PostgreSQL database backend for Mattermost.
+#     - Static IP: ${AI_NETWORK}.88
+#     - Dependencies: None.
+#     - Shared Volumes:
+#       - ${AI_DATA}/mattermost_db:/var/lib/postgresql/data
+#     - Connection Details:
+#       - Host: ${AI_NETWORK}.88
+#       - Port: 5432
+#       - User: postgres
+#       - Password: mattermostpassword
+#       - Database: mattermost
+
+# 11. db_coolify (PostgreSQL):
+#     - Purpose: Shared PostgreSQL database backend for Coolify and Langfuse.
+#     - Static IP: ${AI_NETWORK}.206
+#     - Dependencies: None.
+#     - Shared Volumes:
+#       - ${AI_DATA}/db_coolify:/var/lib/postgresql/data
+#     - Connection Details:
+#       - Host: ${AI_NETWORK}.206
+#       - Port: 5432
+#       - User: postgres
+#       - Password: coolifypassword
+#       - Database: coolify
+#     - Notes: This database is also used by Langfuse with a separate schema.
+
+# 12. maria_db (MariaDB):
+#     - Purpose: General-purpose relational database backend.
+#     - Static IP: ${AI_NETWORK}.200
+#     - Dependencies: None.
+#     - Shared Volumes:
+#       - ${AI_DATA}/mariadb:/var/lib/mysql
+#     - Connection Details:
+#       - Host: ${AI_NETWORK}.200
+#       - Port: 3306
+#       - User: root
+#       - Password: mariadbpassword
+#       - Database: nextcloud
+
+# 13. langfuse:
+#    - Purpose: LLM monitoring and evaluation platform.
+#    - Static IP: ${AI_NETWORK}.82
+#    - Dependencies: db_coolify (PostgreSQL database).
+#    - Shared Volumes:
+#      - ${AI_DATA}/langfuse:/var/lib/langfuse
+#    - Connection Details:
+#      - Database URL: postgresql://postgres:coolifypassword@${AI_NETWORK}.206:5432/coolify
+
+# 14. nextcloud:
+#    - Purpose: Cloud-based file storage and collaboration.
+#    - Static IP: ${AI_NETWORK}.91
+#    - Dependencies:
+#      - maria_db (Database backend).
+#      - redis (Optional for caching and performance optimization).
+#    - Shared Volumes:
+#      - ${AI_DATA}/nextcloud:/var/www/html (Stores application files and configuration).
+#      - ${AI_DATA}/nextcloud_data:/var/www/html/data (Stores user-uploaded files).
+#    - Connection Details:
+#      - Database Type: MariaDB (MySQL compatible).
+#      - Host: ${AI_NETWORK}.200
+#      - Port: 3306
+#      - Database: nextcloud
+#      - User: nextcloud
+#      - Password: Nextcloudbaby100!
+#    - Notes:
+#      - Ensure the MariaDB service is running and accessible at ${AI_NETWORK}.200:3306.
+#      - Redis caching is recommended for better performance but is optional.
+#      - The Nextcloud instance should have sufficient write permissions for volumes.
+
+
+  traefik:
+    container_name: "traefik"
+    hostname: "traefik.internal"
+    restart: "always"
+    image: "traefik:2.11"
+    volumes:
+      - "${AI_DATA:-.}/traefik/traefik.toml:/etc/traefik/traefik.toml"
+      - "${AI_DATA:-.}/traefik/acme.json:/etc/traefik/acme.json"
+      - "${AI_DATA:-.}/traefik/config:/etc/traefik/config"
+      - "${AI_DATA:-.}/tls:/etc/traefik/tls"
+      - "${AI_DATA:-.}/log/traefik:/var/log/traefik"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
+      - "traefik.http.services.traefik.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.traefikweb.rule=Host(`traefik.${AI_DOMAIN}`)"
+      - "traefik.http.routers.traefikweb.entryPoints=http"
+      - "traefik.http.routers.traefikweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.traefikweb.priority=10"
+      - "traefik.http.routers.traefikwebtls.rule=Host(`traefik.${AI_DOMAIN}`)"
+      - "traefik.http.routers.traefikwebtls.entryPoints=https"
+      - "traefik.http.routers.traefikwebtls.middlewares=auth@file"
+      - "traefik.http.routers.traefikwebtls.tls=true"
+      - "traefik.http.routers.traefikwebtls.tls.certresolver=le"
+      - "traefik.http.routers.traefikwebtls.tls.domains[0].main=traefik.${AI_DOMAIN}"
+      - "traefik.http.routers.traefikwebtls.priority=10"
+      # 05-01-2024 @ 15:42 adding Rstudio Connect to the hub list
+      # RStudio Connect
+      - "traefik.http.routers.rstudio-connect.rule=Host(`rstudio-connect.valuechainhackers.xyz`)"
+      - "traefik.http.routers.rstudio-connect.entrypoints=https"
+      - "traefik.http.routers.rstudio-connect.tls.certresolver=le"
+      - "traefik.http.services.rstudio-connect.loadbalancer.server.port=8787"
+      - "traefik.http.services.rstudio-connect.loadbalancer.server.address=148.251.4.42"
+
+
+    environment:
+      - "CLOUDFLARE_API_KEY=${CLOUDFLARE_API_KEY}"
+      - "CLOUDFLARE_EMAIL=${CLOUDFLARE_EMAIL}"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.250
+
+  http:
+    image: "czerasz/http-debugger"
+    container_name: "http"
+    hostname: "http.internal"
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.testhttp.loadbalancer.server.port=3000"
+      - "traefik.http.services.testhttp.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.testhttp.rule=Host(`http.${AI_DOMAIN}`)"
+      - "traefik.http.routers.testhttp.entryPoints=http"
+      - "traefik.http.routers.testhttp.middlewares=https_redirect@file"
+      - "traefik.http.routers.testhttp.priority=10"
+      - "traefik.http.routers.testhttp-tls.rule=Host(`http.${AI_DOMAIN}`)"
+      - "traefik.http.routers.testhttp-tls.entryPoints=https"
+      - "traefik.http.routers.testhttp-tls.tls=true"
+      - "traefik.http.routers.testhttp-tls.priority=10"
+      - "traefik.http.routers.testhttp-tls.tls.certresolver=le"
+      - "traefik.http.routers.testhttp-tls.tls.domains[0].main=http.${AI_DOMAIN}"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.222
+
+  ollama:
+    image: "ollama/ollama:latest"
+    container_name: "ollama"
+    hostname: "ollama.internal"
+    restart: unless-stopped
+    volumes:
+      - "${AI_DATA:-.}/ollama:/root/.ollama"
+    environment:
+      OLLAMA_HOST: 0.0.0.0
+      OLLAMA_BASE_URL: https://ollama.${AI_DOMAIN}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.ollama.loadbalancer.server.port=11434"
+      - "traefik.http.services.ollama.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.ollamaweb.rule=Host(`ollama.${AI_DOMAIN}`)"
+      - "traefik.http.routers.ollamaweb.entryPoints=http"
+      - "traefik.http.routers.ollamaweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.ollamaweb.priority=10"
+      - "traefik.http.routers.ollamawebtls.rule=Host(`ollama.${AI_DOMAIN}`)"
+      - "traefik.http.routers.ollamawebtls.entryPoints=https"
+      - "traefik.http.routers.ollamawebtls.tls=true"
+      - "traefik.http.routers.ollamawebtls.tls.certresolver=le"
+      - "traefik.http.routers.ollamawebtls.tls.domains[0].main=ollama.${AI_DOMAIN}"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['all']
+              capabilities: [gpu]
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.240
+
+  openwebui:
+    image: "ghcr.io/open-webui/open-webui:cuda"
+    container_name: "openwebui"
+    hostname: "openwebui.internal"
+    restart: unless-stopped
+    environment:
+      OLLAMA_BASE_URL: "http://ollama:11434"
+      WEBUI_URL: "https://openwebui.${AI_DOMAIN}"
+      WEBUI_NAME: "${AI_DOMAIN}"
+      ENABLE_RAG_WEB_SEARCH: "true"
+      ENABLE_RAG_HYBRID_SEARCH: "true"
+      RAG_WEB_SEARCH_ENGINE: "searxng"
+      RAG_WEB_SEARCH_RESULT_COUNT: 10
+      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 5
+      WEBUI_BIND_ADDRESS: 0.0.0.0
+      RAG_TOP_K: 5
+      SEARXNG_QUERY_URL: "https://searxng.${AI_DOMAIN}/search?format=json&q=<query>"
+    volumes:
+      - "${AI_DATA:-.}/openwebui:/app/backend/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.openwebui.loadbalancer.server.port=8080"
+      - "traefik.http.services.openwebui.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.openwebuiweb.rule=Host(`openwebui.${AI_DOMAIN}`)"
+      - "traefik.http.routers.openwebuiweb.entryPoints=http"
+      - "traefik.http.routers.openwebuiweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.openwebuiweb.priority=10"
+      - "traefik.http.routers.openwebuiwebtls.rule=Host(`openwebui.${AI_DOMAIN}`)"
+      - "traefik.http.routers.openwebuiwebtls.entryPoints=https"
+      - "traefik.http.routers.openwebuiwebtls.tls=true"
+      - "traefik.http.routers.openwebuiwebtls.tls.certresolver=le"
+      - "traefik.http.routers.openwebuiwebtls.tls.domains[0].main=openwebui.${AI_DOMAIN}"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['all']
+              capabilities: [gpu]
+    extra_hosts:
+      - "ollama:${AI_NETWORK}.240"
+      - "searxng:${AI_NETWORK}.245"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.239
+
+  kotaemon:
+    image: "ghcr.io/cinnamon/kotaemon:main-full"
+    container_name: "kotaemon"
+    hostname: "kotaemon.valuechainhackers.xyz"
+    restart: unless-stopped
+    user: "root"
+    environment:
+      - GRADIO_SERVER_NAME=0.0.0.0
+      - GRADIO_SERVER_PORT=7860
+    ports:
+      - "7860:7860"
+    extra_hosts:
+      - "ollama:${AI_NETWORK}.240"
+      - "searxng:${AI_NETWORK}.245" 
+      - "pipelines:${AI_NETWORK}.232" 
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.kotaemon.loadbalancer.server.port=7860"
+      - "traefik.http.services.kotaemon.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.kotaemonweb.rule=Host(`kotaemon.${AI_DOMAIN}`)"
+      - "traefik.http.routers.kotaemonweb.entryPoints=http"
+      - "traefik.http.routers.kotaemonweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.kotaemonweb.priority=10"
+      - "traefik.http.routers.kotaemonwebtls.rule=Host(`kotaemon.${AI_DOMAIN}`)"
+      - "traefik.http.routers.kotaemonwebtls.entryPoints=https"
+      - "traefik.http.routers.kotaemonwebtls.tls=true"
+      - "traefik.http.routers.kotaemonwebtls.tls.certresolver=le"
+      - "traefik.http.routers.kotaemonwebtls.tls.domains[0].main=kotaemon.${AI_DOMAIN}"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.238
+        
+  searxng:
+    image: searxng/searxng:latest
+    container_name: searxng
+    restart: always
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./searxng:/etc/searxng
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.searxng.loadbalancer.server.port=8080"
+      - "traefik.http.services.searxng.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.searxngweb.rule=Host(`searxng.valuechainhackers.xyz`)"
+      - "traefik.http.routers.searxngweb.entryPoints=http"
+      - "traefik.http.routers.searxngweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.searxngweb.priority=10"
+      - "traefik.http.routers.searxngwebtls.rule=Host(`searxng.valuechainhackers.xyz`)"
+      - "traefik.http.routers.searxngwebtls.entryPoints=https"
+      - "traefik.http.routers.searxngwebtls.tls=true"
+      - "traefik.http.routers.searxngwebtls.tls.certresolver=le"
+      - "traefik.http.routers.searxngwebtls.tls.domains[0].main=searxng.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.245
+  
+  pipelines:
+    image: "ghcr.io/open-webui/pipelines:main"
+    container_name: "pipelines"
+    hostname: "pipelines.internal"
+    restart: unless-stopped
+    volumes:
+      - "${AI_DATA:-.}/pipelines:/app/pipelines"
+    ports:
+      - "9099:9099"  # Ensure port is mapped correctly
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    environment:
+      - "BIND_ADDRESS=0.0.0.0"  # Allow the service to bind to all network interfaces
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.pipelinesweb.rule=Host(`pipelines.${AI_DOMAIN}`)"  # Corrected rule
+      - "traefik.http.routers.pipelinesweb.entryPoints=http"
+      - "traefik.http.routers.pipelinesweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.pipelinesweb.priority=10"
+      - "traefik.http.routers.pipelineswebtls.rule=Host(`pipelines.${AI_DOMAIN}`)"  # Corrected rule
+      - "traefik.http.routers.pipelineswebtls.entryPoints=https"
+      - "traefik.http.routers.pipelineswebtls.tls=true"
+      - "traefik.http.routers.pipelineswebtls.tls.certresolver=le"
+      - "traefik.http.services.pipelines.loadbalancer.server.port=9099"
+      - "traefik.http.services.pipelines.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.pipelineswebtls.tls.domains[0].main=pipelines.${AI_DOMAIN}"  # Corrected rule
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.232  # Ensure this is an unused IP in your network
+
+  neo4j:
+    image: "neo4j:5.11.0"  # Use the latest stable version available on Docker Hub
+    container_name: "neo4j"
+    hostname: "neo4j.internal"
+    restart: always
+    user: "root"
+    environment:
+    - NEO4J_AUTH=neo4j/NeoAdmin  # Set your Neo4j password
+    - NEO4J_dbms_default__listen__address=0.0.0.0  # Listen on all interfaces
+    - NEO4J_dbms_default__advertised__address=neo4j.${AI_DOMAIN}  # Publicly advertise the correct domain/IP
+    - NEO4J_dbms_connector_bolt_tls__level=DISABLED  # Enforce TLS encryption for Bolt
+    - NEO4J_dbms_connector_bolt_advertised__address=neo4j.${AI_DOMAIN}:7687  # Advertise the secure Bolt address
+    volumes:
+      - "${AI_DATA:-.}/neo4j/data:/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${AI_DATA:-.}/neo4j-logs:/logs"   # Ensure correct volume path
+    ports:
+      - "7474:7474"  # HTTP port for Neo4j browser access
+      - "7687:7687"  # Bolt protocol port for database connections
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.neo4j.loadbalancer.server.port=7687"
+      - "traefik.http.services.neo4j.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.neo4jweb.rule=Host(`neo4j.${AI_DOMAIN}`)"
+      - "traefik.http.routers.neo4jweb.entryPoints=http"
+      - "traefik.http.routers.neo4jweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.neo4jtls.rule=Host(`neo4j.${AI_DOMAIN}`)"
+      - "traefik.http.routers.neo4jtls.entryPoints=https"
+      - "traefik.http.routers.neo4jtls.tls=true"
+      - "traefik.http.routers.neo4jtls.tls.certresolver=le"
+      - "traefik.http.routers.neo4jtls.tls.domains[0].main=neo4j.${AI_DOMAIN}"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.253  # Ensure unique IP in your Docker network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    command: ["redis-server", "--requirepass", "Redisbaby100!"]
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.213
+    volumes:
+      - "${AI_DATA:-.}/redis/data:/data"
+      - "${AI_DATA:-.}/redis/logs:/logs"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.tcp.routers.redis.rule=HostSNI(`redis.valuechainhackers.xyz`)"  # External access
+      - "traefik.tcp.routers.redis.entrypoints=redis"
+      - "traefik.tcp.routers.redis.tls.certresolver=le"  # Enable TLS with Let's Encrypt
+      - "traefik.tcp.services.redis.loadbalancer.server.port=6379"
+
+  hugo:
+    image: razonyang/hugo:latest
+    container_name: hugo
+    working_dir: /home/rstudio
+    entrypoint: ["hugo", "server", "--bind", "0.0.0.0", "--baseURL", "https://hugo.${AI_DOMAIN}"]
+    volumes:
+      - "${AI_DATA:-.}/rstudio:/home/rstudio"
+      - "${AI_DATA:-.}/shared:/shared/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.hugo.loadbalancer.server.port=1313"
+      - "traefik.http.routers.hugo.rule=Host(`hugo.${AI_DOMAIN}`)"
+      - "traefik.http.routers.hugo.entryPoints=http"
+      - "traefik.http.routers.hugotls.rule=Host(`hugo.${AI_DOMAIN}`)"
+      - "traefik.http.routers.hugotls.entryPoints=https"
+      - "traefik.http.routers.hugotls.tls=true"
+      - "traefik.http.routers.hugotls.tls.certresolver=le"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.47
+
+  rstudio:
+    image: rocker/rstudio
+    container_name: "rstudio"
+    hostname: "rstudio.internal"
+    restart: always
+    environment:
+      - PASSWORD=Rstudiobaby100!
+    volumes:
+      - "${AI_DATA:-.}/rstudio:/home/rstudio"
+      - "${AI_DATA:-.}/shared:/shared/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.rstudio.loadbalancer.server.port=8787"
+      - "traefik.http.routers.rstudio.rule=Host(`rstudio.${AI_DOMAIN}`)"
+      - "traefik.http.routers.rstudio.entryPoints=http"
+      - "traefik.http.routers.rstudio.middlewares=https_redirect@file"
+      - "traefik.http.routers.rstudiotls.rule=Host(`rstudio.${AI_DOMAIN}`)"
+      - "traefik.http.routers.rstudiotls.entryPoints=https"
+      - "traefik.http.routers.rstudiotls.tls=true"
+      - "traefik.http.routers.rstudiotls.tls.certresolver=le"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.55  # Ensure unique IP
+
+  ml:
+    image: rocker/ml:latest
+    container_name: "ml"
+    hostname: "ml.internal"
+    restart: always
+    environment:
+      - PASSWORD=Mlbaby100!
+    volumes:
+      - "${AI_DATA:-.}/shared:/shared/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "8788:8787"  # Unique port for direct access
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.ml.loadbalancer.server.port=8787"
+      - "traefik.http.routers.ml.rule=Host(`ml.${AI_DOMAIN}`)"
+      - "traefik.http.routers.ml.entryPoints=http"
+      - "traefik.http.routers.ml.middlewares=https_redirect@file"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.56
+
+  verse:
+    image: rocker/verse:latest
+    container_name: "verse"
+    hostname: "verse.internal"
+    restart: always
+    environment:
+      - PASSWORD=Versebaby100!
+    volumes:
+      - "${AI_DATA:-.}/shared:/shared/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    ports:
+      - "8789:8787"  # Unique port for direct access
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.verse.loadbalancer.server.port=8787"
+      - "traefik.http.routers.verse.rule=Host(`verse.${AI_DOMAIN}`)"
+      - "traefik.http.routers.verse.entryPoints=http"
+      - "traefik.http.routers.verse.middlewares=https_redirect@file"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.15
+
+
+  geospatial:
+    image: rocker/geospatial:latest
+    container_name: "geospatial"
+    hostname: "geospatial.internal"
+    restart: always
+    environment:
+      - PASSWORD=Geospatialbaby100!
+    volumes:
+      - "${AI_DATA:-.}/shared:/shared/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.geospatial.loadbalancer.server.port=8787"
+      - "traefik.http.routers.geospatial.rule=Host(`geospatial.${AI_DOMAIN}`)"
+      - "traefik.http.routers.geospatial.entryPoints=http"
+      - "traefik.http.routers.geospatial.middlewares=https_redirect@file"
+      - "traefik.http.routers.geospatialtls.rule=Host(`geospatial.${AI_DOMAIN}`)"
+      - "traefik.http.routers.geospatialtls.entryPoints=https"
+      - "traefik.http.routers.geospatialtls.tls=true"
+      - "traefik.http.routers.geospatialtls.tls.certresolver=le"
+      - "traefik.http.routers.geospatialtls.tls.domains[0].main=geospatial.${AI_DOMAIN}"
+    networks:
+     ainet:
+        ipv4_address: ${AI_NETWORK}.68
+  
+  
+      
+  mattermost-db:
+    image: postgres:13
+    container_name: mattermost-db
+    restart: unless-stopped
+    volumes:
+     - "${AI_DATA:-.}/mattermost-db:/var/lib/postgresql/data"
+     - "${AI_DATA:-.}/shared:/shared/data"
+     - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      POSTGRES_USER: mmuser
+      POSTGRES_PASSWORD: mmuser_password
+      POSTGRES_DB: mattermost
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.88
+
+  app:
+    image: mattermost/mattermost-team-edition:latest
+    container_name: mattermost-app
+    restart: unless-stopped
+    volumes:
+      - "${AI_DATA:-.}/mattermost:/mattermost/data"
+      - "${AI_DATA:-.}/mattermost-config/config.json:/mattermost/config/config.json"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      MM_SQLSETTINGS_DRIVERNAME: "postgres"
+      MM_SQLSETTINGS_DATASOURCE: "postgres://mmuser:mmuser_password@db:5432/mattermost?sslmode=disable"
+    labels:
+      # Enable Traefik for this service
+      - "traefik.enable=true"
+      # Define HTTP routing
+      - "traefik.http.routers.mattermost-http.rule=Host(`mattermost.${AI_DOMAIN}`)"
+      - "traefik.http.routers.mattermost-http.entrypoints=http"
+      - "traefik.http.routers.mattermost-http.middlewares=https_redirect@file"
+      # Define HTTPS routing
+      - "traefik.http.routers.mattermost-https.rule=Host(`mattermost.${AI_DOMAIN}`)"
+      - "traefik.http.routers.mattermost-https.entrypoints=https"
+      - "traefik.http.routers.mattermost-https.tls=true"
+      - "traefik.http.routers.mattermost-https.tls.certresolver=le"
+      # Define the service load balancer settings
+      - "traefik.http.services.mattermost.loadbalancer.server.port=8065"
+      - "traefik.http.services.mattermost.loadbalancer.server.scheme=http"
+    depends_on:
+      - mattermost-db
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.78
+
+  metabase:
+    image: metabase/metabase:latest
+    container_name: metabase
+    hostname: metabase.internal
+    restart: unless-stopped
+    volumes:
+       - "${AI_DATA:-.}/metabase:/metabase"
+       - "${AI_DATA:-.}/shared:/shared/data"
+       - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      MB_DB_TYPE: postgres
+      MB_DB_DBNAME: metabaseappdb
+      MB_DB_PORT: 5432
+      MB_DB_USER: metabase
+      MB_DB_PASS: mysecretpassword
+      MB_DB_HOST: postgres
+    labels:
+      # Enable Traefik for Metabase
+      - "traefik.enable=true"
+      # Define HTTP routing
+      - "traefik.http.routers.metabase-http.rule=Host(`metabase.${AI_DOMAIN}`)"
+      - "traefik.http.routers.metabase-http.entrypoints=http"
+      - "traefik.http.routers.metabase-http.middlewares=https_redirect@file"
+      # Define HTTPS routing
+      - "traefik.http.routers.metabase-https.rule=Host(`metabase.${AI_DOMAIN}`)"
+      - "traefik.http.routers.metabase-https.entrypoints=https"
+      - "traefik.http.routers.metabase-https.tls=true"
+      - "traefik.http.routers.metabase-https.tls.certresolver=le"
+      # Load Balancer settings
+      - "traefik.http.services.metabase.loadbalancer.server.port=3000"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.220
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail -I http://localhost:3000/api/health || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  metabase_db:
+    image: postgres:13
+    container_name: metabase-db
+    hostname: postgres.internal
+    restart: unless-stopped
+    volumes:
+     - "${AI_DATA:-.}/metabase-db:/var/lib/postgresql/data"
+     - "/var/run/docker.sock:/var/run/docker.sock"
+    environment:
+      POSTGRES_USER: metabase
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: metabaseappdb
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.221
+
+# CVE change on 13 - 01 - 2025 include script to install git and connect to git account. 
+
+  jupyterhub:
+    image: jupyterhub/jupyterhub:latest
+    container_name: jupyterhub
+    restart: always
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.jh.loadbalancer.server.port=8000"
+      - "traefik.http.services.jh.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.jhweb.rule=Host(`jupyterhub.${AI_DOMAIN}`)"
+      - "traefik.http.routers.jhweb.entryPoints=http"
+      - "traefik.http.routers.jhweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.jhtls.rule=Host(`jupyterhub.${AI_DOMAIN}`)"
+      - "traefik.http.routers.jhtls.entryPoints=https"
+      - "traefik.http.routers.jhtls.tls=true"
+      - "traefik.http.routers.jhtls.tls.certresolver=le"
+      - "traefik.http.routers.jhtls.tls.domains[0].main=jupyterhub.${AI_DOMAIN}"
+    environment:
+      - JUPYTERHUB_CONFIG=/srv/jupyterhub/jupyterhub_config.py
+      - DOCKER_SPAWN_IMAGE=jupyter/base-notebook:latest  # Use DockerSpawner
+      - DOCKER_NETWORK=ainet  # Ensure user containers are attached to the same network
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    command: >
+      sh -c "
+      apt-get update &&
+      apt-get install -y git sudo &&
+      if ! id -u chris > /dev/null 2>&1; then
+        useradd -m -s /bin/bash chris &&
+        echo 'chris:Jupyterbaby100!' | chpasswd &&
+        usermod -aG sudo chris &&
+        echo 'chris ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers;
+      fi &&
+      git config --global user.name 'Kamitor' &&
+      git config --global user.email 'christiaan_gerardo@hotmail.com' &&
+      pip install notebook &&
+      jupyterhub"
+    volumes:
+      - "${AI_DATA:-.}/jupyterhub_data:/srv/jupyterhub"
+      - "${AI_DATA:-.}/jupyterhub_users:/home/jupyterhub"
+      - "${AI_DATA:-.}/jupyterhub_config.py:/srv/jupyterhub/jupyterhub_config.py"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${AI_DATA:-.}/shared:/shared/data"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.65
+
+
+
+
+
+  nextcloud:
+    image: nextcloud:latest
+    container_name: nextcloud
+    hostname: "nextcloud.internal"
+    restart: always
+    volumes:
+      - "${AI_DATA:-.}/nextcloud:/var/www/html"
+      - "${AI_DATA:-.}/nextcloud-data:/var/www/html/data"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${AI_DATA:-.}/shared:/shared/data"
+    environment:
+      - MYSQL_HOST=db
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=Nextcloudbaby100!
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=Redisbaby100!
+      
+    labels:
+            # Enable Traefik for this service
+      - "traefik.enable=true"
+            # HTTP Routing
+      - "traefik.http.routers.nextcloud-http.rule=Host(`nextcloud.${AI_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-http.entrypoints=http"
+      - "traefik.http.routers.nextcloud-http.middlewares=https_redirect@file"
+            # HTTPS Routing
+      - "traefik.http.routers.nextcloud-https.rule=Host(`nextcloud.${AI_DOMAIN}`)"
+      - "traefik.http.routers.nextcloud-https.entrypoints=https"
+      - "traefik.http.routers.nextcloud-https.tls=true"
+      - "traefik.http.routers.nextcloud-https.tls.certresolver=le"
+            # Service Load Balancer
+      - "traefik.http.services.nextcloud.loadbalancer.server.port=80"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.91
+
+  tutor-lms:
+    image: openedx/lms
+    container_name: tutor-lms
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
+    - "${AI_DATA:-.}/shared:/shared/data"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.101
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tutor-lms.rule=Host(`lms.${AI_DOMAIN}`)"
+      - "traefik.http.routers.tutor-lms.entryPoints=https"
+      - "traefik.http.routers.tutor-lms.tls=true"
+      - "traefik.http.routers.tutor-lms.tls.certresolver=le"
+      - "traefik.http.services.tutor-lms.loadbalancer.server.port=8000"  # Adjust port as per Tutor's Docker Compose
+      
+
+  grafana:
+    image: "grafana/grafana:latest"
+    container_name: "grafana"
+    hostname: "grafana.internal"
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=GrafanaAdmin  # Set your Grafana admin password
+    volumes:
+      - "${AI_DATA:-.}/grafana:/var/lib/grafana"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "${AI_DATA:-.}/shared:/shared/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+      - "traefik.http.services.grafana.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.grafanaweb.rule=Host(`grafana.valuechainhackers.xyz`)"
+      - "traefik.http.routers.grafanaweb.entryPoints=http"
+      - "traefik.http.routers.grafanaweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.grafanaweb.priority=10"
+      - "traefik.http.routers.grafanatls.rule=Host(`grafana.valuechainhackers.xyz`)"
+      - "traefik.http.routers.grafanatls.entryPoints=https"
+      - "traefik.http.routers.grafanatls.tls=true"
+      - "traefik.http.routers.grafanatls.tls.certresolver=le"
+      - "traefik.http.routers.grafanatls.tls.domains[0].main=grafana.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.247  # Assign an unused IP
+
+  elasticsearch:
+    image: "docker.elastic.co/elasticsearch/elasticsearch:7.10.1"
+    container_name: "elasticsearch"
+    hostname: "elasticsearch.internal"
+    restart: unless-stopped
+    user: "root"
+    environment:
+      - discovery.type=single-node
+      - ES_JAVA_OPTS=-Xms512m -Xmx512m  # Set Java memory options
+      - ELASTICSEARCH_HOST=elasticsearch.internal
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    volumes:
+      - "${AI_DATA:-.}/elasticsearch/data:/var/lib/elasticsearch/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.elasticsearch.loadbalancer.server.port=9200"
+      - "traefik.http.services.elasticsearch.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.elasticsearchweb.rule=Host(`elasticsearch.valuechainhackers.xyz`)"
+      - "traefik.http.routers.elasticsearchweb.entryPoints=http"
+      - "traefik.http.routers.elasticsearchweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.elasticsearchweb.priority=10"
+      - "traefik.http.routers.elasticsearchtls.rule=Host(`elasticsearch.valuechainhackers.xyz`)"
+      - "traefik.http.routers.elasticsearchtls.entryPoints=https"
+      - "traefik.http.routers.elasticsearchtls.tls=true"
+      - "traefik.http.routers.elasticsearchtls.tls.certresolver=le"
+      - "traefik.http.routers.elasticsearchtls.tls.domains[0].main=elasticsearch.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.235
+
+
+  langfuse:
+    image: langfuse/langfuse:latest
+    container_name: langfuse
+    restart: unless-stopped
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@db_coolify:5432/langfuse
+      LANGFUSE_ENCRYPTION_KEY: 4a8b6c2d9e5f7a1c3b0d8e9f6a2b1c4d  # Replace with a strong encryption key
+      LANGFUSE_INIT_EMAIL: christiaan.gerardo@gmail.com
+      LANGFUSE_INIT_PASSWORD: Langfusebaby100!
+    volumes:
+      - "${AI_DATA:-.}/langfuse-data:/var/lib/langfuse" 
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.langfuse.rule=Host(`langfuse.valuechainhackers.xyz`)"
+      - "traefik.http.routers.langfuse.entrypoints=https"
+      - "traefik.http.routers.langfuse.tls.certresolver=le"
+      - "traefik.http.services.langfuse.loadbalancer.server.port=3000"
+    networks:
+      ainet:
+        ipv4_address:  ${AI_NETWORK}.82  # Unique static IP within the network
+      
+     
+
+  kibana:
+    image: "docker.elastic.co/kibana/kibana:7.10.1"
+    container_name: "kibana"
+    hostname: "kibana.internal"
+    restart: unless-stopped
+    user: "root"
+    volumes:
+      - "${AI_DATA:-.}/kibana:/usr/share/kibana"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.kibana.loadbalancer.server.port=5601"
+      - "traefik.http.services.kibana.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.kibanaweb.rule=Host(`kibana.valuechainhackers.xyz`)"
+      - "traefik.http.routers.kibanaweb.entryPoints=http"
+      - "traefik.http.routers.kibanaweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.kibanaweb.priority=10"
+      - "traefik.http.routers.kibanatls.rule=Host(`kibana.valuechainhackers.xyz`)"
+      - "traefik.http.routers.kibanatls.entryPoints=https"
+      - "traefik.http.routers.kibanatls.tls=true"
+      - "traefik.http.routers.kibanatls.tls.certresolver=le"
+      - "traefik.http.routers.kibanatls.tls.domains[0].main=kibana.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.237
+
+
+  n8n:
+    image: "docker.n8n.io/n8nio/n8n"
+    container_name: "n8n"
+    hostname: "n8n.internal"
+    user: "root"
+    restart: always
+    volumes:
+      - "${AI_DATA:-.}/n8n:/home/node/.n8n"  # Persistent data storage
+    ports:
+      - "5679:5678"  # Exposing the internal port
+    labels:
+    # Traefik settings for HTTP to HTTPS redirection
+      - "traefik.enable=true"
+      - "traefik.http.routers.n8n-http.rule=Host(`n8n.valuechainhackers.xyz`)"
+      - "traefik.http.routers.n8n-http.entrypoints=http"
+      - "traefik.http.routers.n8n-http.middlewares=https_redirect@file"
+    
+    # Traefik settings for HTTPS routing
+      - "traefik.http.routers.n8n-https.rule=Host(`n8n.valuechainhackers.xyz`)"
+      - "traefik.http.routers.n8n-https.entrypoints=https"
+      - "traefik.http.routers.n8n-https.tls=true"
+      - "traefik.http.routers.n8n-https.tls.certresolver=le"
+      - "traefik.http.services.n8n.loadbalancer.server.port=5678"
+
+    environment:
+    # Basic authentication for the frontend
+      - N8N_BASIC_AUTH_ACTIVE=true
+      - N8N_BASIC_AUTH_USER=admin
+      - N8N_BASIC_AUTH_PASSWORD=N8nbaby100!  # Replace with a strong password
+
+    # Public-facing webhook URL
+      - WEBHOOK_URL=https://n8n.valuechainhackers.xyz/
+      - WEBHOOK_TUNNEL_URL=https://n8n.valuechainhackers.xyz/
+
+    # Generic settings
+      - GENERIC_TIMEZONE=Europe/Amsterdam
+
+    # Optional: Secure keys (if applicable)
+      - N8N_ENCRYPTION_KEY=Z3UlNAQ0JmMWlmb25jZ3KjdnNkc2ViN2VoYXNkbmFuZXBnb3NzZGZm  # Define in `.env` or explicitly set
+
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.218  # Ensure this IP is unique
+
+
+  hugegraph:
+    image: "hugegraph/hugegraph"
+    container_name: "hugegraph"
+    hostname: "hugegraph.internal"
+    user: "root"
+    restart: always
+    volumes:
+      - "${AI_DATA:-.}/hugegraph:/var/lib/hugegraph"  # Use AI_DATA for consistent data storage
+    ports:
+      - "1235:8080"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.hugegraph.loadbalancer.server.port=1235"
+      - "traefik.http.services.hugegraph.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.hugegraphweb.rule=Host(`hugegraph.valuechainhackers.xyz`)"
+      - "traefik.http.routers.hugegraphweb.entryPoints=http"
+      - "traefik.http.routers.hugegraphweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.hugegraphweb.priority=10"
+      - "traefik.http.routers.hugegraphtls.rule=Host(`hugegraph.valuechainhackers.xyz`)"
+      - "traefik.http.routers.hugegraphtls.entryPoints=https"
+      - "traefik.http.routers.hugegraphtls.tls=true"
+      - "traefik.http.routers.hugegraphtls.tls.certresolver=le"
+      - "traefik.http.routers.hugegraphtls.tls.domains[0].main=hugegraph.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.241  # Ensure unique IP in the ainet network
+  
+  axolotl:
+    image: "winglian/axolotl:main-latest"
+    container_name: "axolotl"
+    hostname: "axolotl.internal"
+    user: "root"
+    restart: always
+    runtime: nvidia  # Enable the NVIDIA runtime for GPU support
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      NVIDIA_VISIBLE_DEVICES: "all"
+      NVIDIA_DRIVER_CAPABILITIES: "compute,utility"
+    volumes:
+      - "${AI_DATA:-.}/axolotl:/workspace"  # Consistent volume handling with AI_DATA for data storage
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.axolotl.loadbalancer.server.port=3456"  # If Axolotl uses a different port, change this accordingly
+      - "traefik.http.services.axolotl.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.axolotlweb.rule=Host(`axolotl.valuechainhackers.xyz`)"
+      - "traefik.http.routers.axolotlweb.entryPoints=http"
+      - "traefik.http.routers.axolotlweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.axolotltls.rule=Host(`axolotl.valuechainhackers.xyz`)"
+      - "traefik.http.routers.axolotltls.entryPoints=https"
+      - "traefik.http.routers.axolotltls.tls=true"
+      - "traefik.http.routers.axolotltls.tls.certresolver=le"
+      - "traefik.http.routers.axolotltls.tls.domains[0].main=axolotl.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.252  # Ensure a unique IP in the ainet network
+
+  qdrant:
+    image: "qdrant/qdrant"
+    container_name: "qdrant"
+    hostname: "qdrant.internal"
+    restart: always
+    volumes:
+      - "${AI_DATA:-.}/qdrant:/qdrant/storage"  # Use AI_DATA for consistent data storage
+    ports:
+      - "6333:6333"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.qdrant.loadbalancer.server.port=6333"
+      - "traefik.http.services.qdrant.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.qdrantweb.rule=Host(`qdrant.valuechainhackers.xyz`)"
+      - "traefik.http.routers.qdrantweb.entryPoints=http"
+      - "traefik.http.routers.qdrantweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.qdrantweb.priority=10"
+      - "traefik.http.routers.qdranttls.rule=Host(`qdrant.valuechainhackers.xyz`)"
+      - "traefik.http.routers.qdranttls.entryPoints=https"
+      - "traefik.http.routers.qdranttls.tls=true"
+      - "traefik.http.routers.qdranttls.tls.certresolver=le"
+      - "traefik.http.routers.qdranttls.tls.domains[0].main=qdrant.valuechainhackers.xyz"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.225  # Ensure unique IP in the ainet network
+
+  open4all:
+    image: "ghcr.io/open-webui/open-webui:cuda"
+    container_name: "open4all"
+    hostname: "open4all.internal"
+    restart: unless-stopped
+    environment:
+      OLLAMA_BASE_URL: "http://192.168.168.2:11434"
+      WEBUI_URL: "https://open4all.${AI_DOMAIN}"
+      WEBUI_NAME: "${AI_DOMAIN}4all"
+      WEBUI_BIND_ADDRESS: 0.0.0.0
+      ENABLE_RAG_WEB_SEARCH: "true"
+      ENABLE_RAG_HYBRID_SEARCH: "true"
+      RAG_WEB_SEARCH_ENGINE: "searxng"
+      RAG_WEB_SEARCH_RESULT_COUNT: 10
+      RAG_WEB_SEARCH_CONCURRENT_REQUESTS: 5
+      RAG_TOP_K: 5
+      SEARXNG_QUERY_URL: "https://searxng.${AI_DOMAIN}/search?format=json&q=<query>"
+    volumes:
+      - "${AI_DATA:-.}/open4all:/app/backend/data"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.open4all.loadbalancer.server.port=8080"
+      - "traefik.http.services.open4all.loadbalancer.server.scheme=http"
+      - "traefik.http.routers.open4all.rule=Host(`open4all.valuechainhackers.xyz`)"
+      - "traefik.http.routers.open4all.entryPoints=http"
+      - "traefik.http.routers.open4all.middlewares=https_redirect@file"
+      - "traefik.http.routers.open4all.priority=10"
+      - "traefik.http.routers.open4alltls.rule=Host(`open4all.valuechainhackers.xyz`)"
+      - "traefik.http.routers.open4alltls.entryPoints=https"
+      - "traefik.http.routers.open4alltls.tls=true"
+      - "traefik.http.routers.open4alltls.tls.certresolver=le"
+      - "traefik.http.routers.open4alltls.tls.domains[0].main=open4all.valuechainhackers.xyz"
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: ['all']
+              capabilities: [gpu]
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.216
+
+  erpnext:
+    image: frappe/erpnext:latest
+    container_name: "erpnext"
+    hostname: "erpnext.internal"
+    restart: always
+    environment:
+      - FRAPPE_SITE_NAME=erpnext.${AI_DOMAIN}
+      - MARIADB_HOST=mariadb
+      - REDIS_CACHE=redis-cache
+      - REDIS_QUEUE=redis-queue
+      - REDIS_SOCKETIO=redis-socketio
+    volumes:
+      - "${AI_DATA:-.}/erpnext/sites:/home/frappe/frappe-bench/sites"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.erpnext.loadbalancer.server.port=8000"
+      - "traefik.http.routers.erpnextweb.rule=Host(`erpnext.${AI_DOMAIN}`)"
+      - "traefik.http.routers.erpnextweb.entryPoints=http"
+      - "traefik.http.routers.erpnextweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.erpnexttls.rule=Host(`erpnext.${AI_DOMAIN}`)"
+      - "traefik.http.routers.erpnexttls.entryPoints=https"
+      - "traefik.http.routers.erpnexttls.tls=true"
+      - "traefik.http.routers.erpnexttls.tls.certresolver=le"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.204
+     
+  dolibarr:
+    image: tuxgasy/dolibarr:latest
+    container_name: "dolibarr"
+    hostname: "dolibarr.internal"
+    restart: always
+    environment:
+      - DOLIBARR_DB_HOST=db
+      - DOLIBARR_DB_PORT=3306
+      - DOLIBARR_DB_NAME=dolibarr
+      - DOLIBARR_DB_USER=dolibarr
+      - DOLIBARR_DB_PASSWORD=dolibarr
+    volumes:
+      - "${AI_DATA:-.}/dolibarr:/var/www/html"
+      - "${AI_DATA:-.}/dolibarr-documents:/var/www/documents"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.dolibarr.loadbalancer.server.port=80"
+      - "traefik.http.routers.dolibarrweb.rule=Host(`dolibarr.${AI_DOMAIN}`)"
+      - "traefik.http.routers.dolibarrweb.entryPoints=http"
+      - "traefik.http.routers.dolibarrweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.dolibarrtls.rule=Host(`dolibarr.${AI_DOMAIN}`)"
+      - "traefik.http.routers.dolibarrtls.entryPoints=https"
+      - "traefik.http.routers.dolibarrtls.tls=true"
+      - "traefik.http.routers.dolibarrtls.tls.certresolver=le"
+    depends_on:
+      - db
+    networks:
+     ainet:
+        ipv4_address: ${AI_NETWORK}.201
+
+  db:
+   image: mariadb:latest
+   container_name: "mariadb"
+   hostname: "db.internal"
+   restart: always
+   environment:
+     MYSQL_ROOT_PASSWORD: rootpassword
+   volumes:
+     - "${AI_DATA:-.}/mariadb:/var/lib/mysql"
+   networks:
+     ainet:
+        ipv4_address: ${AI_NETWORK}.200
+
+  
+ 
+
+  akaunting:
+    image: akaunting/akaunting:latest
+    container_name: "akaunting"
+    hostname: "akaunting.internal"
+    restart: always
+    environment:
+      - DB_HOST=db
+      - DB_DATABASE=akaunting
+      - DB_USERNAME=akaunting
+      - DB_PASSWORD=akaunting
+    volumes:
+      - "${AI_DATA:-.}/akaunting:/var/www/html"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.akaunting.loadbalancer.server.port=80"
+      - "traefik.http.routers.akauntingweb.rule=Host(`akaunting.${AI_DOMAIN}`)"
+      - "traefik.http.routers.akauntingweb.entryPoints=http"
+      - "traefik.http.routers.akauntingweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.akauntingtls.rule=Host(`akaunting.${AI_DOMAIN}`)"
+      - "traefik.http.routers.akauntingtls.entryPoints=https"
+      - "traefik.http.routers.akauntingtls.tls=true"
+      - "traefik.http.routers.akauntingtls.tls.certresolver=le"    
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.202
+    
+
+  fireflyiii:
+    image: fireflyiii/core:latest
+    container_name: "fireflyiii"
+    hostname: "fireflyiii.internal"
+    restart: always
+    environment:
+      - APP_KEY=SomeRandomString
+      - DB_HOST=db
+      - DB_DATABASE=fireflyiii
+      - DB_USERNAME=fireflyiii
+      - DB_PASSWORD=fireflyiii
+    volumes:
+      - "${AI_DATA:-.}/fireflyiii:/var/www/html"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.services.fireflyiii.loadbalancer.server.port=8080"
+      - "traefik.http.routers.fireflyiiiweb.rule=Host(`fireflyiii.${AI_DOMAIN}`)"
+      - "traefik.http.routers.fireflyiiiweb.entryPoints=http"
+      - "traefik.http.routers.fireflyiiiweb.middlewares=https_redirect@file"
+      - "traefik.http.routers.fireflyiiitls.rule=Host(`fireflyiii.${AI_DOMAIN}`)"
+      - "traefik.http.routers.fireflyiiitls.entryPoints=https"
+      - "traefik.http.routers.fireflyiiitls.tls=true"
+      - "traefik.http.routers.fireflyiiitls.tls.certresolver=le"
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.203
+
+  coolify:
+    image: coollabsio/coolify:latest
+    container_name: coolify
+    restart: always
+    environment:
+      - COOLIFY_APP_ID=123e4567-e89b-12d3-a456-426614174000
+      - COOLIFY_SECRET_KEY=b3JkWsd6aHRjdDQvMTIzYm5LdGtmZlVuZmRmT1RnRXc=
+      - DATABASE_URL=postgres://postgres:postgres@db_coolify:5432/coolify
+      - COOLIFY_HOSTNAME=coolify.valuechainhackers.xyz
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+      - REDIS_PASSWORD=Redisbaby100!
+      - APP_KEY=Kn5f7zWkW5ctgN5zcii8c7bUWUgcaYlqeFB4DlsRtME=
+    volumes:
+      - "${AI_DATA:-.}/coolify-db:/var/lib/postgresql/data"
+
+    labels:
+    # Enable Traefik
+      - "traefik.enable=true"
+
+    # HTTP routing
+      - "traefik.http.routers.coolify-http.rule=Host(`coolify.valuechainhackers.xyz`)"
+      - "traefik.http.routers.coolify-http.entrypoints=http"
+      - "traefik.http.routers.coolify-http.middlewares=https_redirect@file"
+
+    # HTTPS routing
+      - "traefik.http.routers.coolify-https.rule=Host(`coolify.valuechainhackers.xyz`)"
+      - "traefik.http.routers.coolify-https.entrypoints=https"
+      - "traefik.http.routers.coolify-https.tls=true"
+      - "traefik.http.routers.coolify-https.tls.certresolver=le"
+
+    # Coolify service port
+      - "traefik.http.services.coolify.loadbalancer.server.port=3000"
+
+    depends_on:
+      - db_coolify
+      - redis
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.210
+
+  db_coolify:
+    image: postgres:latest
+    container_name: coolify-db
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=coolify
+    volumes:
+      - ./coolify-db:/var/lib/postgresql/data
+    networks:
+      ainet:
+        ipv4_address: ${AI_NETWORK}.206
+networks:
+  ainet:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: ${AI_NETWORK}.0/24
