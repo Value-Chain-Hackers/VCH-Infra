@@ -1,0 +1,21 @@
+---
+title: "A.I Tools"
+author: "C.G Verhoef"
+format: revealjs
+editor: visual
+---
+
+## Tools for possible intergration
+
+| Tool Name | Function | GitHub Link | Status |
+|--------------|--------------------|------------------------|--------------|
+| ClickClickClick | GUI automation tool | [ClickClickClick](https://github.com/BandarLabs/clickclickclick) | Not Installed |
+| Browser-Use WebUI | Browser automation and control | [Browser-Use WebUI](https://github.com/warmshao/browser-use) | Not Installed |
+| smolagents | Lightweight agents for various tasks | [smolagents](https://github.com/huggingface/smolagents) | Not Installed |
+| Hallo3 | Open-source generative AI model | [Hallo3](https://github.com/fudan-generative-vlp/hallo3) | Not Installed |
+| XiaoZhi AI Chatbot | Lightweight chatbot on ESP32 | [XiaoZhi AI Chatbot](https://github.com/78/xiaozhi-esp32) | Not Installed |
+| AIHawk | Job application assistant powered by AI | [AIHawk](https://github.com/feder-cr/Jobs_Applications_Hawk) | Not Installed |
+| GPT Crawler | Automates crawling with GPT models | [GPT Crawler](https://github.com/BuilderIO/gpt-crawler) | Not Installed |
+| Swarms | Multi-agent AI framework | [Swarms](https://github.com/kyegomez/swarms) | Not Installed |
+| AI Hedge Fund | AI-powered hedge fund simulation | [AI Hedge Fund](https://github.com/virattt/ai-hedge-fund) | Not Installed |
+| MiniMind | Open-source AI for mental health support | [MiniMind](https://github.com/jingyaogong/minimind) | Not Installed |
