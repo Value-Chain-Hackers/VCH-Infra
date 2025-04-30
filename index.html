@@ -355,6 +355,394 @@ display: none;
 </div>
 
 
+<p>Installing the Local LLM stack onto Ixworks</p>
+<p><a href="https://github.com/Value-Chain-Hackers/Ixworks-ai-packaged.git" class="uri">https://github.com/Value-Chain-Hackers/Ixworks-ai-packaged.git</a></p>
+<div id="project-overview-ai-sandbox-deployment" class="section level1">
+<h1>🧭 Project Overview: AI Sandbox Deployment</h1>
+<div id="objective" class="section level2">
+<h2>🎯 Objective</h2>
+<p>To deploy a fully functional, self-hosted AI sandbox environment on
+the domain <a href="https://aisandbox1.ixworx.nl"><code>https://aisandbox1.ixworx.nl</code></a>,
+utilizing Docker and HAProxy for secure, scalable, and modular access to
+various AI-related services. The aim is to enable internal research,
+testing, and demonstration of advanced tooling for the Value Chain
+Hackers initiative.</p>
+<hr />
+</div>
+<div id="core-components" class="section level2">
+<h2>🧱 Core Components</h2>
+<table>
+<colgroup>
+<col width="22%" />
+<col width="43%" />
+<col width="34%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Service</th>
+<th>Purpose</th>
+<th>Access Path</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>n8n</td>
+<td>No-code automation platform</td>
+<td><code>/n8n</code></td>
+</tr>
+<tr class="even">
+<td>Open WebUI</td>
+<td>LLM chat interface (backed by Ollama)</td>
+<td><code>/openwebui</code></td>
+</tr>
+<tr class="odd">
+<td>Flowise</td>
+<td>Visual LLM workflow builder</td>
+<td><code>/flowise</code></td>
+</tr>
+<tr class="even">
+<td>Supabase</td>
+<td>Backend-as-a-service platform (auth, DB, storage)</td>
+<td><code>/supabase</code></td>
+</tr>
+<tr class="odd">
+<td>Langfuse</td>
+<td>Observability for LLM applications</td>
+<td><code>/langfuse</code> (port 3002)</td>
+</tr>
+<tr class="even">
+<td>Qdrant</td>
+<td>Vector database for embeddings</td>
+<td>(API only, not exposed via subpath)</td>
+</tr>
+<tr class="odd">
+<td>Ollama</td>
+<td>Local LLM model server</td>
+<td><code>/ollama</code></td>
+</tr>
+<tr class="even">
+<td>Redis (Valkey)</td>
+<td>Caching and job queue</td>
+<td>Internal use</td>
+</tr>
+<tr class="odd">
+<td>MinIO</td>
+<td>S3-compatible object storage</td>
+<td>Internal use</td>
+</tr>
+<tr class="even">
+<td>ClickHouse</td>
+<td>High-performance analytics DB (for Langfuse)</td>
+<td>Internal use</td>
+</tr>
+<tr class="odd">
+<td>SearXNG</td>
+<td>Private, meta-search engine</td>
+<td><code>/searxng</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+</div>
+<div id="networking-routing" class="section level2">
+<h2>🔐 Networking &amp; Routing</h2>
+<ul>
+<li><strong>TLS Termination</strong>: Handled entirely by
+<strong>HAProxy</strong>, which routes HTTPS traffic to the internal
+server.</li>
+<li><strong>Caddy</strong>: Now redundant. It can be
+<strong>removed</strong> from the project.</li>
+<li><strong>Subpath routing</strong>: Each service is accessible through
+a distinct subpath on the main domain (<code>/n8n</code>,
+<code>/flowise</code>, etc.).</li>
+<li><strong>Ports</strong>: All services run on <code>localhost</code>
+and are <strong>not exposed</strong> to the internet directly. HAProxy
+maps external HTTPS paths to internal Docker ports.</li>
+</ul>
+<hr />
+</div>
+<div id="deployment-strategy" class="section level2">
+<h2>🔁 Deployment Strategy</h2>
+<ul>
+<li>All services are orchestrated with <strong>Docker
+Compose</strong></li>
+<li>Environment configuration is managed via a single
+<strong><code>.env</code></strong> file</li>
+<li>The full stack is started via a custom <strong>Python script
+(<code>start_services.py</code>)</strong></li>
+<li>HAProxy is configured <strong>externally</strong> by Tommy and does
+not require modification on the server itself</li>
+</ul>
+<hr />
+</div>
+<div id="deliverables" class="section level2">
+<h2>📦 Deliverables</h2>
+<ol style="list-style-type: decimal">
+<li>A working <code>.env</code> file aligned with the domain and routing
+logic</li>
+<li>A functioning <code>docker-compose.yml</code> for all services</li>
+<li>Clean server environment with unnecessary Docker containers and
+Caddy removed</li>
+<li>Verified external access via <a href="https://aisandbox1.ixworx.nl/%3Cservice"><code>https://aisandbox1.ixworx.nl/&lt;service</code></a></li>
+</ol>
+<hr />
+</div>
+<div id="next-step" class="section level2">
+<h2>🚦Next Step</h2>
+<table>
+<colgroup>
+<col width="42%" />
+<col width="25%" />
+<col width="32%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Public Path</th>
+<th>Server IP &amp; Port</th>
+<th>Comment</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><a href="https://aisandbox1.ixworx.nl/n8n"><code>https://aisandbox1.ixworx.nl/n8n</code></a></td>
+<td><code>95.99.112.224:5678</code></td>
+<td>n8n service</td>
+</tr>
+<tr class="even">
+<td><a href="https://aisandbox1.ixworx.nl/openwebui"><code>https://aisandbox1.ixworx.nl/openwebui</code></a></td>
+<td><code>95.99.112.224:3000</code></td>
+<td>Open WebUI</td>
+</tr>
+<tr class="odd">
+<td><a href="https://aisandbox1.ixworx.nl/flowise"><code>https://aisandbox1.ixworx.nl/flowise</code></a></td>
+<td><code>95.99.112.224:3001</code></td>
+<td>Flowise service</td>
+</tr>
+<tr class="even">
+<td><a href="https://aisandbox1.ixworx.nl/langfuse"><code>https://aisandbox1.ixworx.nl/langfuse</code></a></td>
+<td><code>95.99.112.224:3002</code></td>
+<td>Langfuse</td>
+</tr>
+<tr class="odd">
+<td><a href="https://aisandbox1.ixworx.nl/ollama"><code>https://aisandbox1.ixworx.nl/ollama</code></a></td>
+<td><code>95.99.112.224:11434</code></td>
+<td>Ollama API</td>
+</tr>
+<tr class="even">
+<td><a href="https://aisandbox1.ixworx.nl/supabase"><code>https://aisandbox1.ixworx.nl/supabase</code></a></td>
+<td><code>95.99.112.224:8000</code></td>
+<td>Supabase API Gateway (Kong)</td>
+</tr>
+<tr class="odd">
+<td><a href="https://aisandbox1.ixworx.nl/searxng"><code>https://aisandbox1.ixworx.nl/searxng</code></a></td>
+<td><code>95.99.112.224:8080</code></td>
+<td>SearxNG search</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="openwebui-integration-expansion-checklist" class="section level2">
+<h2>✅ OpenWebUI Integration &amp; Expansion Checklist</h2>
+<table>
+<colgroup>
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="44%" />
+<col width="13%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>✅</th>
+<th>Integration</th>
+<th>Function</th>
+<th>Description</th>
+<th>Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Jupyter Notebook</td>
+<td>Code Execution</td>
+<td>Integrate Jupyter for executing Python code within OpenWebUI.</td>
+<td><a href="https://docs.openwebui.com/tutorials/jupyter/" class="uri">https://docs.openwebui.com/tutorials/jupyter/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Langfuse</td>
+<td>Monitoring &amp; Debugging</td>
+<td>Trace application data, monitor usage, and evaluate model
+performance.</td>
+<td><a href="https://langfuse.com/docs/integrations/openwebui" class="uri">https://langfuse.com/docs/integrations/openwebui</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Ollama</td>
+<td>Local LLM Management</td>
+<td>Connect to local large language models.</td>
+<td><a href="https://docs.openwebui.com/getting-started/quick-start/starting-with-ollama/" class="uri">https://docs.openwebui.com/getting-started/quick-start/starting-with-ollama/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>OpenAI-Compatible APIs</td>
+<td>Model Integration</td>
+<td>Use GPT-4, Mistral, Groq, OpenRouter, and others.</td>
+<td><a href="https://docs.openwebui.com/getting-started/quick-start/starting-with-openai/" class="uri">https://docs.openwebui.com/getting-started/quick-start/starting-with-openai/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>S3 Storage</td>
+<td>Data Management</td>
+<td>Use Amazon S3 or compatible backends for storing files.</td>
+<td><a href="https://docs.openwebui.com/tutorials/s3-storage/" class="uri">https://docs.openwebui.com/tutorials/s3-storage/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Speech-to-Text (Whisper, Web)</td>
+<td>Voice Input</td>
+<td>Use Whisper API or browser STT to transcribe voice input.</td>
+<td><a href="https://docs.openwebui.com/category/-speech-to-text/" class="uri">https://docs.openwebui.com/category/-speech-to-text/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Text-to-Speech (TTS)</td>
+<td>Voice Output</td>
+<td>Add audio responses using Edge TTS or Openedai-speech.</td>
+<td><a href="https://docs.openwebui.com/category/️-text-to-speech/" class="uri">https://docs.openwebui.com/category/️-text-to-speech/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Image Generation</td>
+<td>Creative Content</td>
+<td>Use models to generate images from text prompts.</td>
+<td><a href="https://docs.openwebui.com/tutorials/images/" class="uri">https://docs.openwebui.com/tutorials/images/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Web Search</td>
+<td>External Info</td>
+<td>Query external websites for up-to-date info and integrate with
+RAG.</td>
+<td><a href="https://docs.openwebui.com/category/-web-search/" class="uri">https://docs.openwebui.com/category/-web-search/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>HTTPS (Nginx, HAProxy)</td>
+<td>Secure Access</td>
+<td>Use HTTPS reverse proxy for secure access.</td>
+<td><a href="https://docs.openwebui.com/tutorials/https-using-nginx/" class="uri">https://docs.openwebui.com/tutorials/https-using-nginx/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>User Management</td>
+<td>Access Control</td>
+<td>Admin panel for user creation, permission settings, and token
+management.</td>
+<td><a href="https://docs.openwebui.com/features/" class="uri">https://docs.openwebui.com/features/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Browser Search Engine</td>
+<td>Quick Input</td>
+<td>Set OpenWebUI as a browser search engine.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/browser-search-engine/" class="uri">https://docs.openwebui.com/tutorials/integrations/browser-search-engine/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Home Assistant</td>
+<td>Smart Home Control</td>
+<td>Send messages to Home Assistant using conversation component.</td>
+<td><a href="https://github.com/TheRealPSV/ha-openwebui-conversation" class="uri">https://github.com/TheRealPSV/ha-openwebui-conversation</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Authentik</td>
+<td>Authentication</td>
+<td>Use Authentik as an SSO provider.</td>
+<td><a href="https://docs.goauthentik.io/integrations/services/open-webui/" class="uri">https://docs.goauthentik.io/integrations/services/open-webui/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Workato</td>
+<td>Workflow Automation</td>
+<td>Automate tasks between OpenWebUI and other platforms.</td>
+<td><a href="https://www.workato.com/integrations/microsoft_sharepoint~open-webui" class="uri">https://www.workato.com/integrations/microsoft_sharepoint~open-webui</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>LibreTranslate</td>
+<td>Translation</td>
+<td>Translate input/output in real-time using self-hosted translation
+service.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/libretranslate/" class="uri">https://docs.openwebui.com/tutorials/integrations/libretranslate/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Redis WebSocket Support</td>
+<td>Performance</td>
+<td>Use Redis for scalable WebSocket connection support.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/redis-websocket-support/" class="uri">https://docs.openwebui.com/tutorials/integrations/redis-websocket-support/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Amazon Bedrock</td>
+<td>AI APIs</td>
+<td>Integrate with Bedrock for model inference via AWS.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/amazon-bedrock/" class="uri">https://docs.openwebui.com/tutorials/integrations/amazon-bedrock/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Okta OIDC</td>
+<td>SSO</td>
+<td>Use Okta as an identity provider for OpenWebUI.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/okta-oidc-sso-integration/" class="uri">https://docs.openwebui.com/tutorials/integrations/okta-oidc-sso-integration/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Firefox Chatbot Sidebar</td>
+<td>Browser Assistant</td>
+<td>Add a chatbot assistant sidebar in Firefox.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/firefox-ai-chatbot-sidebar/" class="uri">https://docs.openwebui.com/tutorials/integrations/firefox-ai-chatbot-sidebar/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>LiteLLM</td>
+<td>LLM Proxy</td>
+<td>Proxy multiple model providers with a unified API layer.</td>
+<td><a href="https://github.com/BerriAI/litellm" class="uri">https://github.com/BerriAI/litellm</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>Continue.dev (VSCode Plugin)</td>
+<td>Developer Tools</td>
+<td>Integrate OpenWebUI with the Continue VSCode extension.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/continue-dev-vscode-extension/" class="uri">https://docs.openwebui.com/tutorials/integrations/continue-dev-vscode-extension/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>Custom CA Store</td>
+<td>TLS Certificates</td>
+<td>Add trusted CAs for internal or custom HTTPS configurations.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/custom-ca-store/" class="uri">https://docs.openwebui.com/tutorials/integrations/custom-ca-store/</a></td>
+</tr>
+<tr class="even">
+<td><span class="math display">\[ \]</span></td>
+<td>DeepSeek R1 via Llama.cpp</td>
+<td>Model Execution</td>
+<td>Run DeepSeek R1 with local Llama.cpp backend.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/deepseek-r1-llama-cpp/" class="uri">https://docs.openwebui.com/tutorials/integrations/deepseek-r1-llama-cpp/</a></td>
+</tr>
+<tr class="odd">
+<td><span class="math display">\[ \]</span></td>
+<td>IPEX-LLM (Intel GPU)</td>
+<td>Hardware Acceleration</td>
+<td>Run quantized models using Intel GPUs via IPEX-LLM integration.</td>
+<td><a href="https://docs.openwebui.com/tutorials/integrations/ipex-llm-intel-gpu/" class="uri">https://docs.openwebui.com/tutorials/integrations/ipex-llm-intel-gpu/</a></td>
+</tr>
+</tbody>
+</table>
+</div>
 <div id="tools-for-possible-intergration" class="section level2">
 <h2>Tools for possible intergration</h2>
 <table>
@@ -492,6 +880,7 @@ container_name: smolagents networks: <span class="math display">\[&#39;demo&#39;
 environment: - CONFIG_PATH=/app/config.yaml volumes: -
 ./smolagents/config:/app/config command: &gt; bash -c ” echo Starting
 smolagents… &amp;&amp; python3 -m smolagents”</p>
+</div>
 </div>
 
 
