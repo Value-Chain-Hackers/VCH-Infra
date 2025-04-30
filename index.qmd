@@ -5,10 +5,84 @@ format: revealjs
 editor: visual
 ---
 
+Installing the Local LLM stack onto Ixworks
+
+<https://github.com/Value-Chain-Hackers/Ixworks-ai-packaged.git>
+
+# 🧭 Project Overview: AI Sandbox Deployment
+
+## 🎯 Objective
+
+To deploy a fully functional, self-hosted AI sandbox environment on the domain [`https://aisandbox1.ixworx.nl`](https://aisandbox1.ixworx.nl), utilizing Docker and HAProxy for secure, scalable, and modular access to various AI-related services. The aim is to enable internal research, testing, and demonstration of advanced tooling for the Value Chain Hackers initiative.
+
+------------------------------------------------------------------------
+
+## 🧱 Core Components
+
+| Service | Purpose | Access Path |
+|----------------|-------------------------------|-------------------------|
+| n8n | No-code automation platform | `/n8n` |
+| Open WebUI | LLM chat interface (backed by Ollama) | `/openwebui` |
+| Flowise | Visual LLM workflow builder | `/flowise` |
+| Supabase | Backend-as-a-service platform (auth, DB, storage) | `/supabase` |
+| Langfuse | Observability for LLM applications | `/langfuse` (port 3002) |
+| Qdrant | Vector database for embeddings | (API only, not exposed via subpath) |
+| Ollama | Local LLM model server | `/ollama` |
+| Redis (Valkey) | Caching and job queue | Internal use |
+| MinIO | S3-compatible object storage | Internal use |
+| ClickHouse | High-performance analytics DB (for Langfuse) | Internal use |
+| SearXNG | Private, meta-search engine | `/searxng` |
+
+------------------------------------------------------------------------
+
+## 🔐 Networking & Routing
+
+-   **TLS Termination**: Handled entirely by **HAProxy**, which routes HTTPS traffic to the internal server.
+-   **Caddy**: Now redundant. It can be **removed** from the project.
+-   **Subpath routing**: Each service is accessible through a distinct subpath on the main domain (`/n8n`, `/flowise`, etc.).
+-   **Ports**: All services run on `localhost` and are **not exposed** to the internet directly. HAProxy maps external HTTPS paths to internal Docker ports.
+
+------------------------------------------------------------------------
+
+## 🔁 Deployment Strategy
+
+-   All services are orchestrated with **Docker Compose**
+-   Environment configuration is managed via a single **`.env`** file
+-   The full stack is started via a custom **Python script (`start_services.py`)**
+-   HAProxy is configured **externally** by Tommy and does not require modification on the server itself
+
+------------------------------------------------------------------------
+
+## 📦 Deliverables
+
+1.  A working `.env` file aligned with the domain and routing logic
+2.  A functioning `docker-compose.yml` for all services
+3.  Clean server environment with unnecessary Docker containers and Caddy removed
+4.  Verified external access via [`https://aisandbox1.ixworx.nl/<service`](https://aisandbox1.ixworx.nl/<service)
+
+------------------------------------------------------------------------
+
+## 🚦Next Step
+
+✅ Finalize `.env`\
+✅ Confirm HAProxy mapping with Tommy\
+🔄 Run the stack using `python3 start_services.py`\
+🧪 Smoke test all routes (`/n8n`, `/openwebui`, `/flowise`, etc.)
+
+| Public Path | Server IP & Port | Comment |
+|------------------------------|------------------|-----------------------|
+| [`https://aisandbox1.ixworx.nl/n8n`](https://aisandbox1.ixworx.nl/n8n) | `95.99.112.224:5678` | n8n service |
+| [`https://aisandbox1.ixworx.nl/openwebui`](https://aisandbox1.ixworx.nl/openwebui) | `95.99.112.224:3000` | Open WebUI |
+| [`https://aisandbox1.ixworx.nl/flowise`](https://aisandbox1.ixworx.nl/flowise) | `95.99.112.224:3001` | Flowise service |
+| [`https://aisandbox1.ixworx.nl/langfuse`](https://aisandbox1.ixworx.nl/langfuse) | `95.99.112.224:3002` | Langfuse |
+| [`https://aisandbox1.ixworx.nl/ollama`](https://aisandbox1.ixworx.nl/ollama) | `95.99.112.224:11434` | Ollama API |
+| [`https://aisandbox1.ixworx.nl/supabase`](https://aisandbox1.ixworx.nl/supabase) | `95.99.112.224:8000` | Supabase API Gateway (Kong) |
+| [`https://aisandbox1.ixworx.nl/searxng`](https://aisandbox1.ixworx.nl/searxng) | `95.99.112.224:8080` | SearxNG search |
+
 ## Tools for possible intergration
 
 | Tool Name | Function | GitHub Link | Status |
-|----------------|------------------|----------------------|----------------|
+|------------------|------------------|------------------|------------------|
 | ClickClickClick | GUI automation tool | [ClickClickClick](https://github.com/BandarLabs/clickclickclick) | Not Installed |
 | Browser-Use WebUI | Browser automation and control | [Browser-Use WebUI](https://github.com/warmshao/browser-use) | Not Installed |
 | smolagents | Lightweight agents for various tasks | [smolagents](https://github.com/huggingface/smolagents) | Not Installed |
