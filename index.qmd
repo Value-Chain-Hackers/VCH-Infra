@@ -20,7 +20,7 @@ To deploy a fully functional, self-hosted AI sandbox environment on the domain [
 ## 🧱 Core Components
 
 | Service | Purpose | Access Path |
-|----------------|-------------------------------|-------------------------|
+|------------------|------------------------------|------------------------|
 | n8n | No-code automation platform | `/n8n` |
 | Open WebUI | LLM chat interface (backed by Ollama) | `/openwebui` |
 | Flowise | Visual LLM workflow builder | `/flowise` |
@@ -58,14 +58,14 @@ To deploy a fully functional, self-hosted AI sandbox environment on the domain [
 1.  A working `.env` file aligned with the domain and routing logic
 2.  A functioning `docker-compose.yml` for all services
 3.  Clean server environment with unnecessary Docker containers and Caddy removed
-4.  Verified external access via [`https://aisandbox1.ixworx.nl/<service`](https://aisandbox1.ixworx.nl/<service)
+4.  Verified external access via [`https://aisandbox1.ixworx.nl/<service`](https://aisandbox1.ixworx.nl/%3Cservice)
 
 ------------------------------------------------------------------------
 
 ## 🚦Next Step
 
 | Public Path | Server IP & Port | Comment |
-|------------------------------|------------------|-----------------------|
+|------------------------------|-------------------|-----------------------|
 | [`https://aisandbox1.ixworx.nl/n8n`](https://aisandbox1.ixworx.nl/n8n) | `95.99.112.224:5678` | n8n service |
 | [`https://aisandbox1.ixworx.nl/openwebui`](https://aisandbox1.ixworx.nl/openwebui) | `95.99.112.224:3000` | Open WebUI |
 | [`https://aisandbox1.ixworx.nl/flowise`](https://aisandbox1.ixworx.nl/flowise) | `95.99.112.224:3001` | Flowise service |
@@ -77,7 +77,7 @@ To deploy a fully functional, self-hosted AI sandbox environment on the domain [
 ## ✅ OpenWebUI Integration & Expansion Checklist
 
 | ✅ | Integration | Function | Description | Reference |
-|----------|----------|----------|--------------------------------|----------|
+|------------|------------|------------|-------------------------|------------|
 | \[ \] | Jupyter Notebook | Code Execution | Integrate Jupyter for executing Python code within OpenWebUI. | <https://docs.openwebui.com/tutorials/jupyter/> |
 | \[ \] | Langfuse | Monitoring & Debugging | Trace application data, monitor usage, and evaluate model performance. | <https://langfuse.com/docs/integrations/openwebui> |
 | \[ \] | Ollama | Local LLM Management | Connect to local large language models. | <https://docs.openwebui.com/getting-started/quick-start/starting-with-ollama/> |
