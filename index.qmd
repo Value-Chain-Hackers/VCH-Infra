@@ -13,7 +13,7 @@ Installing the Local LLM stack onto Ixworks
 
 ## 🎯 Objective
 
-To deploy a fully functional, self-hosted AI sandbox environment on the domain [`https://aisandbox1.ixworx.nl`](https://aisandbox1.ixworx.nl), utilizing Docker and HAProxy for secure, scalable, and modular access to various AI-related services. The aim is to enable internal research, testing, and demonstration of advanced tooling for the Value Chain Hackers initiative.
+To deploy a fully functional, self-hosted AI sandbox environment on the domain [`https://aisandbox1.ixworx.nl`](https://aisandbox1.ixworx.nl), utilizing Docker and HAProxy for secure, scalable, and modular access to various AI-related services. The aim is to enable internal research, testing, and demonstration of advanced tooling for the Value Chain Hackers initiative
 
 ------------------------------------------------------------------------
 
