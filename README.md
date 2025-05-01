@@ -1,8 +1,53 @@
 VCH-Infra
 
+| Subdomain                                                      | Tool/Service       | Description                                                                 |
+|----------------------------------------------------------------|--------------------|-----------------------------------------------------------------------------|
+| [https://n8n1.ixworx.nl](https://n8n1.ixworx.nl)               | n8n                | Automate workflows and integrate APIs or apps without code.                |
+| [https://openwebui1.ixworx.nl](https://openwebui1.ixworx.nl)   | Open WebUI         | Chat interface for running and managing local LLMs.                        |
+| [https://flowise1.ixworx.nl](https://flowise1.ixworx.nl)       | Flowise            | Visual editor for building and deploying LLM pipelines and agents.         |
+| [https://langfuse1.ixworx.nl](https://langfuse1.ixworx.nl)     | Langfuse           | Monitor, evaluate, and debug LLM-based applications.                       |
+| [https://ollama1.ixworx.nl](https://ollama1.ixworx.nl)         | Ollama             | Run and manage LLMs like LLaMA, Mistral, etc., locally with GPU support.   |
+| [https://supabase1.ixworx.nl](https://supabase1.ixworx.nl)     | Supabase           | Backend as a service: Postgres, authentication, storage, and APIs.        |
+| [https://searxng1.ixworx.nl](https://searxng1.ixworx.nl)       | SearxNG            | Privacy-respecting metasearch engine aggregating multiple sources.         |
+| [https://supabasestudio1.ixworx.nl](https://supabasestudio1.ixworx.nl) | Supabase Studio    | Web-based admin panel for managing Supabase services and databases.        |
+
+
+## 👓 Recommended reading
+
+n8n is full of useful content for getting started quickly with its AI concepts
+and nodes. If you run into an issue, go to [support](#support).
+
+- [AI agents for developers: from theory to practice with n8n](https://blog.n8n.io/ai-agents/)
+- [Tutorial: Build an AI workflow in n8n](https://docs.n8n.io/advanced-ai/intro-tutorial/)
+- [Langchain Concepts in n8n](https://docs.n8n.io/advanced-ai/langchain/langchain-n8n/)
+- [Demonstration of key differences between agents and chains](https://docs.n8n.io/advanced-ai/examples/agent-chain-comparison/)
+- [What are vector databases?](https://docs.n8n.io/advanced-ai/examples/understand-vector-databases/)
+
+## 🎥 Video walkthrough
+
+- [Cole's Guide to the Local AI Starter Kit](https://youtu.be/pOsO40HSbOo)
+
+## 🛍️ More AI templates
+
+For more AI workflow ideas, visit the [**official n8n AI template
+gallery**](https://n8n.io/workflows/?categories=AI). From each workflow,
+select the **Use workflow** button to automatically import the workflow into
+your local n8n instance.
+
+### Learn AI key concepts
+
+- [AI Agent Chat](https://n8n.io/workflows/1954-ai-agent-chat/)
+- [AI chat with any data source (using the n8n workflow too)](https://n8n.io/workflows/2026-ai-chat-with-any-data-source-using-the-n8n-workflow-tool/)
+- [Chat with OpenAI Assistant (by adding a memory)](https://n8n.io/workflows/2098-chat-with-openai-assistant-by-adding-a-memory/)
+- [Use an open-source LLM (via HuggingFace)](https://n8n.io/workflows/1980-use-an-open-source-llm-via-huggingface/)
+- [Chat with PDF docs using AI (quoting sources)](https://n8n.io/workflows/2165-chat-with-pdf-docs-using-ai-quoting-sources/)
+- [AI agent that can scrape webpages](https://n8n.io/workflows/2006-ai-agent-that-can-scrape-webpages/)
+
+
 ## What Is It?
 
 **VCH-Infra** is a fully integrated, open-source research ecosystem designed to streamline supply chain finance innovation. It’s a modular infrastructure that empowers academics, researchers, and students to collaborate, analyze, and solve complex problems more efficiently than ever before.
+
 
 ---
 
