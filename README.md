@@ -101,6 +101,133 @@ graph TD
     J --> K
 ```
 
+Contraints: 
+
+❗ Minimal to no budget
+
+❗ Limited technical admin bandwidth
+
+❗ Need for student usability (no long onboarding)
+
+❗ Actual research demands (not just productivity tools)
+
+✅ Desire for long-term scalability, documentation, and publishing
+
+## 🅰️ Stack A – GitHub + Nextcloud Core
+
+| **Research Step**                           | **Tool(s)**                                      |
+|---------------------------------------------|--------------------------------------------------|
+| 1. Identify & Frame Problem                 | Nextcloud Text, HedgeDoc                         |
+| 2. Contextualize with Literature & Practice | Zotero, Nextcloud Files                          |
+| 3. Define Objectives & Questions            | Nextcloud Text, GitHub Issues                    |
+| 4. Design Methodology & Engagement Plan     | Nextcloud Office, Draw.io                        |
+| 5. Set Up Research Infrastructure           | Nextcloud (self-hosted), GitHub, Docker Compose |
+| 6. Collect Data & Engage Stakeholders       | Nextcloud Forms, KoboToolbox                     |
+| 7. Process & Curate Data                    | LibreOffice, GitHub CSV                          |
+| 8. Analyze Data & Generate Insights         | Jupyter (Colab), RStudio Cloud                   |
+| 9. Interpret, Validate & Synthesize         | GitHub Discussions, Nextcloud Talk              |
+|10. Communicate & Disseminate               | GitHub Pages, Nextcloud Deck                     |
+|11. Reflect, Archive & Prepare for Reuse     | GitHub, Nextcloud Archive folders                |
+
+## 🅱️ Stack B – GitHub Lite + Google Infra
+
+| **Research Step**                           | **Tool(s)**                          |
+|---------------------------------------------|--------------------------------------|
+| 1. Identify & Frame Problem                 | Google Docs                          |
+| 2. Contextualize with Literature & Practice | Zotero, Connected Papers             |
+| 3. Define Objectives & Questions            | Google Docs, GitHub Issues           |
+| 4. Design Methodology & Engagement Plan     | Google Slides, Draw.io               |
+| 5. Set Up Research Infrastructure           | Google Drive, GitHub                 |
+| 6. Collect Data & Engage Stakeholders       | Google Forms, KoboToolbox            |
+| 7. Process & Curate Data                    | Google Sheets, GitHub CSV            |
+| 8. Analyze Data & Generate Insights         | Google Colab, GitHub CSV workflows   |
+| 9. Interpret, Validate & Synthesize         | Google Docs comments, Discord        |
+|10. Communicate & Disseminate               | Canva (Free), Google Slides          |
+|11. Reflect, Archive & Prepare for Reuse     | Google Drive, GitHub                 |
+
+## 🅲 Stack C – Obsidian + GitHub + Local Tools
+
+| **Research Step**                           | **Tool(s)**                             |
+|---------------------------------------------|------------------------------------------|
+| 1. Identify & Frame Problem                 | Obsidian Vault                          |
+| 2. Contextualize with Literature & Practice | Zotero, Obsidian Citation Plugin        |
+| 3. Define Objectives & Questions            | Obsidian + GitHub Issues                |
+| 4. Design Methodology & Engagement Plan     | Obsidian Canvas, Markdown Templates     |
+| 5. Set Up Research Infrastructure           | Local folders, GitHub                   |
+| 6. Collect Data & Engage Stakeholders       | KoboToolbox (manual import)             |
+| 7. Process & Curate Data                    | Local CSV, Obsidian Tables plugin       |
+| 8. Analyze Data & Generate Insights         | R or Python, Obsidian Graph view        |
+| 9. Interpret, Validate & Synthesize         | Obsidian links, GitHub PR reviews       |
+|10. Communicate & Disseminate               | GitHub Pages, Markdown to PDF           |
+|11. Reflect, Archive & Prepare for Reuse     | Obsidian Vaults, GitHub versioning      |
+
+# Stack D – Visual Support (Canva-Centric)
+
+| **Research Step**                         | **Tool**                                     |
+|-------------------------------------------|----------------------------------------------|
+| 1. Identify & Frame Problem               | Google Docs, Canva Templates                 |
+| 2. Contextualize with Literature          | Canva Infographics, Google Scholar           |
+| 3. Define Objectives & Questions          | Google Docs, Canva Storyboards               |
+| 4. Design Methodology & Engagement Plan   | Google Slides, Canva                         |
+| 5. Set Up Research Infrastructure         | Google Drive                                 |
+| 6. Collect Data                           | Google Forms                                 |
+| 7. Process & Curate Data                  | Google Sheets                                |
+| 8. Analyze Data                           | Google Sheets Charts                         |
+| 9. Interpret & Synthesize                 | Google Docs, Canva Visuals                   |
+|10. Communicate & Disseminate             | Canva Presentations, PDF Export              |
+|11. Reflect, Archive & Prepare for Reuse  | Google Drive Manual Versioning               |
+
+# Stack E – Microsoft 365 Baseline
+
+| **Research Step**                         | **Tool**                                     |
+|-------------------------------------------|----------------------------------------------|
+| 1. Identify & Frame Problem               | Microsoft Word, OneNote                      |
+| 2. Contextualize with Literature          | Word References, Excel Tables                |
+| 3. Define Objectives & Questions          | Word Templates, Outlook                      |
+| 4. Design Methodology & Engagement Plan   | Word, PowerPoint                             |
+| 5. Set Up Research Infrastructure         | OneDrive, Teams Planner                      |
+| 6. Collect Data                           | Microsoft Forms                              |
+| 7. Process & Curate Data                  | Excel, OneNote                               |
+| 8. Analyze Data                           | Excel, Power BI Free                         |
+| 9. Interpret & Synthesize                 | Teams, Word Comments                         |
+|10. Communicate & Disseminate             | PowerPoint, PDF Export                       |
+|11. Reflect, Archive & Prepare for Reuse  | OneDrive Versioning, SharePoint              |
+
+
+# Tool Stack Comparison – Support Across the 11-Step Research Workflow
+
+| **Research Step**                         | **GitHub + Nextcloud**         | **GitHub + Google**             | **Obsidian + GitHub**           | **Canva-Centric**               | **Microsoft 365**               |
+|-------------------------------------------|--------------------------------|----------------------------------|----------------------------------|----------------------------------|----------------------------------|
+| 1. Identify & Frame Problem               | ✅ (Text, Notes, HedgeDoc) 📈💸 | ✅ (Docs, Drive) 📈💸             | ✅ (Obsidian vault) 📈💸         | ⚠️ (Docs + Canva templates) 📈💸 | ✅ (Word + OneDrive) 📈          |
+| 2. Contextualize with Literature          | ✅ (Zotero + Files) 📈💸        | ✅ (Zotero + Papers) 📈💸         | ✅ (Zotero + Obsidian) 📈💸      | ⚠️ (Infographics, not structured)📈💸 | ⚠️ (Word-based, no citation mgmt)📈 |
+| 3. Define Objectives & Questions          | ✅ (Nextcloud Text + GitHub) 📈💸| ✅ (Docs + GitHub Issues) 📈💸   | ✅ (Markdown + GitHub) 📈💸      | ⚠️ (Docs, visual-only) 📈💸       | ✅ (Word templates) 📈            |
+| 4. Design Methodology & Engagement Plan   | ✅ (Office + Diagrams) 📈💸     | ✅ (Slides, Draw.io) 📈💸         | ⚠️ (Manual in Markdown) 📈💸     | ✅ (Canva visuals) ⚠️🚫           | ✅ (PowerPoint + Word) 📈         |
+| 5. Set Up Research Infrastructure         | ✅ (Docker + GitHub + Nextcloud)📈💸 | ⚠️ (Drive folders, no control) 🚫💸 | ✅ (Local + GitHub) 📈💸         | ⚠️ (Drive only, no real infra) 🚫💸 | ✅ (Teams + OneDrive) 🚫          |
+| 6. Collect Data                           | ✅ (Forms + KoboToolbox) 📈💸   | ✅ (Forms + KoboToolbox) 🚫💸    | ⚠️ (Manual CSV import) 📈💸      | ⚠️ (Only via Forms) 🚫💸          | ✅ (MS Forms + Excel) 🚫          |
+| 7. Process & Curate Data                  | ✅ (LibreOffice, CSV, GitHub) 📈💸 | ✅ (Sheets + GitHub) 🚫💸        | ⚠️ (Manual tagging in Obsidian) 📈💸 | ⚠️ (Basic Sheets) 🚫💸            | ✅ (Excel) 🚫                     |
+| 8. Analyze Data                           | ✅ (Colab, RStudio) 📈💸        | ✅ (Colab, Sheets) 🚫💸           | ✅ (R/Python locally) 📈💸       | ⚠️ (Basic Sheets only) 🚫💸       | ⚠️ (Excel only, Power BI limited) 🚫 |
+| 9. Interpret & Synthesize                 | ✅ (Talk + GitHub Discussions) 📈💸| ✅ (Discord + Docs) 🚫💸         | ⚠️ (Local links, GitHub PRs) 📈💸| ⚠️ (Docs, Canva) 🚫💸            | ✅ (Teams, Word) 🚫               |
+|10. Communicate & Disseminate             | ✅ (GitHub Pages + Deck) 📈💸   | ✅ (Slides, Canva, Pages) 🚫💸    | ✅ (Markdown export + Pages) 📈💸| ✅ (Canva Presentations) 🚫💸     | ✅ (PowerPoint, PDF) 🚫           |
+|11. Reflect, Archive & Prepare for Reuse  | ✅ (GitHub + Nextcloud) 📈💸    | ⚠️ (Drive lacks versioning) 🚫💸 | ✅ (Vault backups + GitHub) 📈💸 | 🚫 (Not designed for reproducibility) | ⚠️ (OneDrive with limits) 🚫     |
+
+
+
+Legend:
+✅ Fully Supported  
+⚠️ Partially Supported  
+❌ Not Supported  
+
+| **Tool**                 | **Free Tier Limitations**                                                    | **Scalability Warning**                                        |
+| ------------------------ | ---------------------------------------------------------------------------- | -------------------------------------------------------------- |
+| **Google Docs/Forms**    | Requires Google Accounts; storage and control tied to Google                 | Not GDPR-compliant for self-hosting or institutional ownership |
+| **Microsoft Word/Forms** | Licensed through institution only; limited collaboration unless via OneDrive | Not usable freely outside Windesheim ecosystem                 |
+| **Canva**                | Free version lacks brand kits, export options, team collaboration controls   | Easily hits limits in multi-user academic use                  |
+| **Notion**               | 10 guests max, 1000 blocks for teams in free version                         | Needs upgrade fast once used collaboratively                   |
+| **Miro**                 | Max 3 boards in free tier                                                    | Not viable for multiple teams/projects                         |
+| **GitHub**               | ✅ Free for public and private repos (with 3GB storage)                       | ✅ Scales well, but not ideal for non-technical users           |
+| **Nextcloud**            | ✅ Free and open-source; requires self-hosting                                | ✅ Can scale fully if hosted properly                           |
+| **KoboToolbox**          | ✅ Free for non-commercial research                                           | ✅ Good for data collection in fieldwork contexts               |
+
 
 
 VCH-Infra
