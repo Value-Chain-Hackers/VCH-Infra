@@ -393,77 +393,81 @@ Legend:
 ```mermaid
 flowchart TD
 
-  %% INTERNAL WINDESHEIM NETWORK (PRIVATE ZONE)
-  subgraph windesheim_internal_zone
+  %% WINDESHEIM INTERNAL NETWORK
+  subgraph windesheim_private_zone
     direction TB
 
-    wg_client[WireGuard VPN Client]
-    docker_bridge[Docker Network - Internal Services]
-    internal_gateway[Loopback Gateway 127.0.0.1]
-    internal_proxy[Internal Reverse Proxy]
+    internal_lan[LAN - No Inbound Allowed]
+    vpn_client[WireGuard VPN Client]
+    docker_net[Docker Network - app_bridge]
 
-    wg_client --> docker_bridge
-    docker_bridge --> internal_gateway
-    internal_gateway --> internal_proxy
-  end
-
-  %% SERVICES BEHIND INTERNAL PROXY (ABSTRACTED)
-  subgraph internal_services
-    nextcloud[Nextcloud Stack]
+    proxy_int[Internal Reverse Proxy]
+    gitlab[Self-Hosted GitLab CE]
+    nextcloud[Nextcloud]
     n8n[n8n Automation]
-    git_sync[GitLab Pull Sync]
-    nextcloud_db[PostgreSQL]
-    nextcloud_redis[Redis Cache]
-    office_collab[Collabora Office]
-    nextcloud --> nextcloud_db
-    nextcloud --> nextcloud_redis
-    nextcloud --> office_collab
-    internal_proxy --> nextcloud
-    internal_proxy --> n8n
-    git_sync --> n8n
+    postgres[PostgreSQL]
+    redis[Redis]
+    collabora[Collabora Office]
+    monitoring[Uptime Kuma or Prometheus]
+
+    internal_lan --> vpn_client
+    vpn_client --> docker_net
+    docker_net --> proxy_int
+    proxy_int --> gitlab
+    proxy_int --> nextcloud
+    proxy_int --> n8n
+    nextcloud --> postgres
+    nextcloud --> redis
+    nextcloud --> collabora
+    n8n --> postgres
+    monitoring --> docker_net
   end
 
-  docker_bridge --> internal_services
-
-  %% PUBLIC VPS LAYER (REVERSE PROXY AND ROUTING)
-  subgraph digitalocean_vps zone
+  %% DIGITALOCEAN VPS WITH FAILOVER
+  subgraph public_vps_primary
     direction TB
-
-    public_iface[eth0 Public Interface - valuechainhackers.xyz]
-    wg_server[WireGuard VPN Server]
-    caddy_proxy[Caddy Reverse Proxy]
+    vps_iface[eth0 - Public Interface]
+    vpn_server[WireGuard VPN Server]
+    proxy_ext_primary[Caddy Reverse Proxy]
     webhook_relay[Webhook Forwarder]
 
-    public_iface --> wg_server
-    wg_server --> caddy_proxy
-    caddy_proxy --> webhook_relay
+    vps_iface --> vpn_server
+    vpn_server --> proxy_ext_primary
+    proxy_ext_primary --> webhook_relay
   end
 
-  %% DOMAIN ROUTING
-  subgraph domain_routing
-    dns_valuechainhackers[DNS A Record - valuechainhackers.xyz]
-    dns_valuechainhackers --> public_iface
+  subgraph public_vps_fallback
+    direction TB
+    vpn_server_b[WireGuard VPN Server - Backup]
+    proxy_ext_backup[Reverse Proxy - Fallback]
+    relay_backup[Backup Webhook Sync]
+
+    proxy_ext_backup --> relay_backup
+    vpn_server_b --> proxy_ext_backup
   end
 
-  %% VPN LINK (PERSISTENT OUTBOUND)
-  wg_client --- wg_server
+  %% VPN ROUTING LINKS
+  vpn_client --- vpn_server
+  vpn_client --- vpn_server_b
 
-  %% GITLAB CLOUD
-  subgraph gitlab_cloud
-    gitlab_hooks[GitLab Webhooks]
-    gitlab_pages[GitLab Pages]
-    gitlab_hooks --> webhook_relay
+  %% PUBLIC DOMAIN + ROUTING
+  subgraph dns_zone
+    domain_a[DNS A Record valuechainhackers.xyz]
+    domain_a --> proxy_ext_primary
+    domain_a --> proxy_ext_backup
   end
 
-  %% EXTERNAL USER FLOW
-  subgraph user_clients
-    user_browser[Researcher or Student Browser]
-    user_browser --> gitlab_pages
-    user_browser --> caddy_proxy
+  %% EXTERNAL WORLD
+  subgraph external_access
+    researcher_browser[Browser - Researcher or Student]
+    researcher_browser --> proxy_ext_primary
+    researcher_browser --> proxy_ext_backup
   end
 
-  %% RELAY FLOW TO INTERNAL
-  webhook_relay --> wg_client
+  %% FLOW BACK TO INTERNAL
+  webhook_relay --> vpn_client
+  relay_backup --> vpn_client
+
 
 ```
 
