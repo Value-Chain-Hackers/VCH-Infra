@@ -392,40 +392,56 @@ Legend:
 
 ```mermaid
 flowchart TD
-    subgraph Windesheim_Private_Network
-        NC[Nextcloud Suite]
-        N8N[n8n Automation Engine]
-        LO[LibreOffice Server]
-        PG[PostgreSQL Database]
-        VPNC[WireGuard VPN Client]
-        GITM[Internal Git Mirror]
-        NC --> N8N
-        NC --> LO
-        N8N --> PG
-        VPNC --> N8N
-        GITM --> N8N
-    end
 
-    subgraph Public_VPS
-        VPNS[WireGuard VPN Server]
-        RP[Reverse Proxy]
-        RELAY[Webhook and GitHub Relay]
-        VPNS --> RP
-        RP --> RELAY
-    end
+  %% WINDESHEIM NETWORK (PRIVATE, NO PUBLIC IP)
+  subgraph zone_windesheim
+    direction TB
 
-    subgraph GitHub
-        GH[GitHub Repos and Pages]
-        GH --> RELAY
-    end
+    lan[Internal LAN]
+    docker_net[Internal Docker Network]
+    vpn_client[WireGuard VPN Client]
+    loopback[127.0.0.1 Internal Access]
 
-    subgraph Users
-        U1[Researchers and Students]
-        U1 --> GH
-        U1 --> RP
-    end
+    lan --> vpn_client
+    vpn_client --> docker_net
+    docker_net --> loopback
+  end
 
-    RELAY --> VPNC
+  %% PUBLIC VPS (INTERNET-FACING ROUTING LAYER)
+  subgraph zone_vps_public
+    direction TB
+
+    eth0[Public Interface]
+    vpn_server[WireGuard VPN Server]
+    reverse_proxy[Reverse Proxy Caddy or nginx]
+    webhook_forwarder[Webhook Forwarder to VPN]
+
+    eth0 --> vpn_server
+    vpn_server --> reverse_proxy
+    reverse_proxy --> webhook_forwarder
+  end
+
+  %% ROUTING FLOW: VPN LINK
+  vpn_client --- vpn_server
+
+  %% GITLAB
+  subgraph gitlab_cloud
+    gitlab_webhook[GitLab Webhook]
+    gitlab_pages[GitLab Pages]
+
+    gitlab_webhook --> webhook_forwarder
+  end
+
+  %% EXTERNAL USERS
+  subgraph external_users
+    browser[Student or Researcher Browser]
+    browser --> gitlab_pages
+    browser --> reverse_proxy
+  end
+
+  %% FINAL FORWARDING TO INTERNAL SERVICE
+  webhook_forwarder --> docker_net
+
 ```
 
 
