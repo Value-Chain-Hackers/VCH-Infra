@@ -393,54 +393,77 @@ Legend:
 ```mermaid
 flowchart TD
 
-  %% WINDESHEIM NETWORK (PRIVATE, NO PUBLIC IP)
-  subgraph zone_windesheim
+  %% INTERNAL WINDESHEIM NETWORK (PRIVATE ZONE)
+  subgraph windesheim_internal_zone
     direction TB
 
-    lan[Internal LAN]
-    docker_net[Internal Docker Network]
-    vpn_client[WireGuard VPN Client]
-    loopback[127.0.0.1 Internal Access]
+    wg_client[WireGuard VPN Client]
+    docker_bridge[Docker Network - Internal Services]
+    internal_gateway[Loopback Gateway 127.0.0.1]
+    internal_proxy[Internal Reverse Proxy]
 
-    lan --> vpn_client
-    vpn_client --> docker_net
-    docker_net --> loopback
+    wg_client --> docker_bridge
+    docker_bridge --> internal_gateway
+    internal_gateway --> internal_proxy
   end
 
-  %% PUBLIC VPS (INTERNET-FACING ROUTING LAYER)
-  subgraph zone_vps_public
+  %% SERVICES BEHIND INTERNAL PROXY (ABSTRACTED)
+  subgraph internal_services
+    nextcloud[Nextcloud Stack]
+    n8n[n8n Automation]
+    git_sync[GitLab Pull Sync]
+    nextcloud_db[PostgreSQL]
+    nextcloud_redis[Redis Cache]
+    office_collab[Collabora Office]
+    nextcloud --> nextcloud_db
+    nextcloud --> nextcloud_redis
+    nextcloud --> office_collab
+    internal_proxy --> nextcloud
+    internal_proxy --> n8n
+    git_sync --> n8n
+  end
+
+  docker_bridge --> internal_services
+
+  %% PUBLIC VPS LAYER (REVERSE PROXY AND ROUTING)
+  subgraph digitalocean_vps zone
     direction TB
 
-    eth0[Public Interface]
-    vpn_server[WireGuard VPN Server]
-    reverse_proxy[Reverse Proxy Caddy or nginx]
-    webhook_forwarder[Webhook Forwarder to VPN]
+    public_iface[eth0 Public Interface - valuechainhackers.xyz]
+    wg_server[WireGuard VPN Server]
+    caddy_proxy[Caddy Reverse Proxy]
+    webhook_relay[Webhook Forwarder]
 
-    eth0 --> vpn_server
-    vpn_server --> reverse_proxy
-    reverse_proxy --> webhook_forwarder
+    public_iface --> wg_server
+    wg_server --> caddy_proxy
+    caddy_proxy --> webhook_relay
   end
 
-  %% ROUTING FLOW: VPN LINK
-  vpn_client --- vpn_server
+  %% DOMAIN ROUTING
+  subgraph domain_routing
+    dns_valuechainhackers[DNS A Record - valuechainhackers.xyz]
+    dns_valuechainhackers --> public_iface
+  end
 
-  %% GITLAB
+  %% VPN LINK (PERSISTENT OUTBOUND)
+  wg_client --- wg_server
+
+  %% GITLAB CLOUD
   subgraph gitlab_cloud
-    gitlab_webhook[GitLab Webhook]
+    gitlab_hooks[GitLab Webhooks]
     gitlab_pages[GitLab Pages]
-
-    gitlab_webhook --> webhook_forwarder
+    gitlab_hooks --> webhook_relay
   end
 
-  %% EXTERNAL USERS
-  subgraph external_users
-    browser[Student or Researcher Browser]
-    browser --> gitlab_pages
-    browser --> reverse_proxy
+  %% EXTERNAL USER FLOW
+  subgraph user_clients
+    user_browser[Researcher or Student Browser]
+    user_browser --> gitlab_pages
+    user_browser --> caddy_proxy
   end
 
-  %% FINAL FORWARDING TO INTERNAL SERVICE
-  webhook_forwarder --> docker_net
+  %% RELAY FLOW TO INTERNAL
+  webhook_relay --> wg_client
 
 ```
 
