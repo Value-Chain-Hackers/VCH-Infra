@@ -1,8 +1,4 @@
 
-
-
-
-# VCH Lab – Complete Research & Operational Process Model
 # VCH Lab – Practical Research Workflow from a Researcher's Perspective
 
 ## 1. Identify and Frame the Research Problem
@@ -80,18 +76,18 @@
 - Close the loop with stakeholders (e.g. feedback on implementation, impact)
 
 ```mermaid
-flowchart TD
-    A[1. Identify & Frame Problem]
-    B[2. Contextualize with Literature & Practice]
-    C[3. Define Objectives & Research Questions]
-    D[4. Design Methodology & Engagement Plan]
-    E[5. Set Up Research Infrastructure]
-    F[6. Collect Data & Engage Stakeholders]
-    G[7. Process & Curate Data]
-    H[8. Analyze Data & Generate Insights]
-    I[9. Interpret, Validate & Synthesize]
-    J[10. Communicate & Disseminate]
-    K[11. Reflect, Archive & Prepare for Reuse]
+graph TD
+    A[Identify & Frame Problem]
+    B[Contextualize with Literature & Practice]
+    C[Define Objectives & Research Questions]
+    D[Design Methodology & Engagement Plan]
+    E[Set Up Research Infrastructure]
+    F[Collect Data & Engage Stakeholders]
+    G[Process & Curate Data]
+    H[Analyze Data & Generate Insights]
+    I[Interpret, Validate & Synthesize]
+    J[Communicate & Disseminate]
+    K[Reflect, Archive & Prepare for Reuse]
 
     A --> B
     B --> C
