@@ -60,18 +60,18 @@
 - Enable reuse and transparency through open standards
 
 ```mermaid
-flowchart TD
-    A[1. Problem Framing & Stakeholder Engagement]
-    B[2. Literature Review & Conceptual Modeling]
-    C[3. Research Design & Tooling Setup]
-    D[4. Data Collection]
-    E[5. Data Processing & Curation]
-    F[6. Data Analysis & Synthesis]
-    G[7. Interpretation & Validation]
-    H[8. Report Production & Dissemination]
-    I[9. Education, Training & Student Reflection]
-    J[10. Infrastructure & Lab Operations]
-    K[11. Archiving & Reproducibility]
+graph TD
+    A[Problem Framing & Stakeholder Engagement]
+    B[Literature Review & Conceptual Modeling]
+    C[Research Design & Tooling Setup]
+    D[Data Collection]
+    E[Data Processing & Curation]
+    F[Data Analysis & Synthesis]
+    G[Interpretation & Validation]
+    H[Report Production & Dissemination]
+    I[Education, Training & Student Reflection]
+    J[Infrastructure & Lab Operations]
+    K[Archiving & Reproducibility]
 
     A --> B
     B --> C
@@ -84,6 +84,7 @@ flowchart TD
     I --> K
     J --> C
     J --> K
+
 ```
 
 
