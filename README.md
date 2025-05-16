@@ -482,25 +482,46 @@ flowchart TD
 | **Monitoring & Backups**     | 2 vCPU, 4 GB RAM, 250 GB SSD (or access to remote storage), 1 Gbps LAN          | Prometheus, Grafana, Uptime Kuma, log aggregation. Should be isolated and hardened.                     |
 | **VPN / Reverse Proxy Node** | 2 vCPU, 2–4 GB RAM, 50 GB SSD, Public IP, Ubuntu 22.04 or Alpine, 1 Gbps uplink | Public-facing VPS. WireGuard server, reverse proxy (Caddy/nginx). Should be cheap and disposable.       |
 
-+---------------------------+
-|     VPS (DO)             |
-|  - WireGuard Server      |
-|  - Caddy Reverse Proxy   |
-+------------+-------------+
-             |
-         VPN Tunnel
-             |
-+------------v-------------+     +------------------------+
-|   Nextcloud + Collabora  |<--->| PostgreSQL + Redis     |
-+--------------------------+     +------------------------+
+```mermaid
+flowchart TD
 
-+--------------------------+     +------------------------+
-|        GitLab            |<--->|    n8n Automation      |
-+--------------------------+     +------------------------+
+  subgraph Public_Internet
+    gw01[VCH-GATEWAY01<br>Reverse Proxy<br>WireGuard Server<br>valuechainhackers.xyz]
+  end
 
-+--------------------------+     +------------------------+
-| JupyterLab / RStudio     |     | Monitoring + Backups   |
-+--------------------------+     +------------------------+
+  gw01 --- vpn_tunnel
+
+  subgraph Windesheim_LAN_Cluster
+    direction TB
+
+    core01[VCH-CORE01<br>Nextcloud<br>Collabora Office]
+    db01[VCH-DB01<br>PostgreSQL<br>Redis]
+    auto01[VCH-AUTOMATION01<br>n8n<br>Git Sync]
+    dev01[VCH-DEV01<br>GitLab CE]
+    analytics01[VCH-ANALYTICS01<br>JupyterLab<br>RStudio]
+    mon01[VCH-MON01<br>Uptime Kuma<br>Prometheus<br>Backups]
+
+    vpn_tunnel --> core01
+    vpn_tunnel --> dev01
+    vpn_tunnel --> analytics01
+    vpn_tunnel --> auto01
+
+    core01 --> db01
+    auto01 --> db01
+    dev01 --> db01
+    analytics01 --> db01
+
+    mon01 --> db01
+    mon01 --> core01
+    mon01 --> dev01
+    mon01 --> analytics01
+  end
+
+  subgraph Researchers_and_Students
+    user[Browser or SSH Client]
+    user --> gw01
+  end
+```
 
 | **Node Name**      | **Primary Role(s)**                              | **Key Services Hosted**                        | **Recommended Hardware**                                                                |
 | ------------------ | ------------------------------------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
