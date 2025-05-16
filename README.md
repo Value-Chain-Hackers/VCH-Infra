@@ -371,6 +371,23 @@ Legend:
 | **Maintenance**               | ✅ Low (managed by Windesheim IT)            | ❌ High (requires admin, updates, security)       | ✅ Low (self-managed local setup)                 | ✅ Low (hosted externally, minimal overhead)          |
 | **Who hosts it**              | Windesheim                                   | Chris / Internal Admin                            | Individual user                                   | Windesheim (Office), others are external platforms   |
 
+# VCH Tool Stack Comparison – Reality-Checked with 11 Research Steps
+
+| **Research Step**                          | **MS Office**               | **Nextcloud + GitHub**         | **MS Office + Obsidian + GitHub** | **MS Office + Discord + GitHub**  |
+|-------------------------------------------|------------------------------|----------------------------------|-------------------------------------|-------------------------------------|
+| 1. Identify & Frame Problem               | ✅ Word, email, Teams         | ⚠️ Text tools exist, but unstructured | ✅ Obsidian vaults, GitHub Issues   | ✅ Discord discussion + notes       |
+| 2. Contextualize with Literature          | ⚠️ Word ref manager (limited) | ✅ Zotero + Nextcloud Files      | ✅ Obsidian + Zotero plugin         | ⚠️ Depends on external tools        |
+| 3. Define Objectives & Questions          | ✅ Word templates              | ✅ GitHub Issues + Markdown      | ✅ GitHub markdown + structured notes | ✅ Discord for collab, GitHub for tracking |
+| 4. Design Methodology & Engagement Plan   | ✅ Word + PPT                  | ✅ GitHub Wiki + Nextcloud Docs  | ⚠️ Markdown only, hard to visualize | ✅ PPT + Discord discussions        |
+| 5. Set Up Research Infrastructure         | ❌ No infra tools             | ✅ GitHub + Nextcloud (requires admin) | ⚠️ Manual GitHub sync, local        | ⚠️ No infra control, fragmented     |
+| 6. Collect Data                           | ✅ MS Forms                   | ✅ Nextcloud Forms, KoboToolbox | ❌ Manual input only                | ✅ MS Forms or Google Forms         |
+| 7. Process & Curate Data                  | ✅ Excel                      | ✅ LibreOffice + GitHub versioning | ⚠️ Manual CSV + Markdown            | ✅ Excel + GitHub repo              |
+| 8. Analyze Data                           | ⚠️ Excel only                 | ✅ Jupyter via Colab, RStudio    | ✅ Python or R locally              | ⚠️ Only with external tools         |
+| 9. Interpret & Synthesize                 | ⚠️ Word + Outlook comments    | ✅ GitHub Discussions + Docs     | ✅ Obsidian linking                 | ✅ Discord calls + GitHub Issues    |
+|10. Communicate & Disseminate             | ✅ PPT, Word reports          | ✅ GitHub Pages, Nextcloud Deck | ✅ GitHub Pages, Obsidian PDF       | ✅ Canva, Discord posts, GitHub     |
+|11. Reflect, Archive & Prepare for Reuse  | ⚠️ OneDrive (weak VC, closed) | ✅ GitHub + Nextcloud backups    | ✅ GitHub repo, vault backups       | ⚠️ GitHub is fine, Discord is ephemeral |
+
+
 VCH-Infra
 
 | Subdomain                                                      | Tool/Service       | Description                                                                 |
