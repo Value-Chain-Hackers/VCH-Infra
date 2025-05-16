@@ -3,75 +3,95 @@
 
 
 # VCH Lab – Complete Research & Operational Process Model
+# VCH Lab – Practical Research Workflow from a Researcher's Perspective
 
-## 1. Problem Framing & Stakeholder Engagement
-- Define challenges and system boundaries
-- Identify stakeholder needs and motivations
-- Translate real-world input into research questions
+## 1. Identify and Frame the Research Problem
+- Observe a real-world issue or system breakdown
+- Engage with stakeholders to understand needs and context
+- Co-define the challenge with partners or beneficiaries
+- Translate into a researchable problem statement
+- Justify societal, economic, and environmental relevance
 
-## 2. Literature Review & Conceptual Modeling
-- Conduct structured desk research
-- Build theoretical frameworks
-- Identify legal and policy context
+## 2. Contextualize with Literature and Practice
+- Conduct a structured literature review
+- Map relevant theories, legal frameworks, and policies (e.g. CSRD, EUDR)
+- Analyze prior case studies or institutional reports
+- Gather insights from practitioners, interviews, or workshops
+- Identify conceptual gaps, contradictions, or innovations
 
-## 3. Research Design & Tooling Setup
-- Select methods (qualitative, quantitative, hybrid)
-- Develop instruments (surveys, templates, guides)
-- Set up infrastructure (collaboration tools, data pipelines)
+## 3. Define Objectives and Research Questions
+- Formulate guiding questions or hypotheses
+- Define target outcomes (policy impact, practical tool, insight generation)
+- Align research aims with stakeholder goals
+- Establish success criteria and indicators
 
-## 4. Data Collection
-- Perform surveys, interviews, desk data sourcing
-- Conduct fieldwork or case study research
-- Capture raw data with context and consent
+## 4. Design Methodology and Engagement Plan
+- Choose suitable methods (surveys, interviews, modeling, desk research)
+- Develop research instruments (guides, templates, frameworks)
+- Co-create data collection protocols with field partners
+- Define sampling logic and inclusion criteria
+- Plan stakeholder check-ins and validation moments
+- Prepare consent forms, ethical notes, and GDPR-safe workflows
 
-## 5. Data Processing & Curation
-- Clean and standardize datasets
-- Add metadata and documentation
-- Organize storage for accessibility and governance
+## 5. Set Up Research Infrastructure
+- Select tools for writing, collaboration, storage, and versioning
+- Organize project folders, permissions, and document templates
+- Configure data entry systems (Nextcloud forms, GitHub repos)
+- Ensure reproducibility and traceability setup
 
-## 6. Data Analysis & Synthesis
-- Apply analytical techniques (statistical, qualitative, network-based)
-- Generate findings and patterns
-- Align results with research questions
+## 6. Collect Data and Engage Stakeholders
+- Conduct interviews, surveys, or workshops with field actors
+- Log observational notes, transcripts, recordings
+- Collect documents, reports, and digital sources
+- Maintain communication with stakeholders throughout data collection
+- Document engagement context and reflections
 
-## 7. Interpretation & Validation
-- Interpret results through theoretical and practical lenses
-- Validate through peer input, stakeholder review, or triangulation
-- Identify risks, assumptions, and implications
+## 7. Process and Curate Data
+- Clean and organize raw datasets
+- Code qualitative transcripts
+- Create summaries, fact sheets, or tagged excerpts
+- Add metadata, version tags, and licensing info
+- Store securely with backup and access protocols
 
-## 8. Report Production & Dissemination
-- Create reports, briefs, and internal deliverables
-- Design visual outputs and presentation assets
-- Share through platforms, partners, or public channels
+## 8. Analyze Data and Generate Insights
+- Conduct analysis (statistical, comparative, thematic, network)
+- Use appropriate tooling (Excel, R, Python, qualitative coding tools)
+- Involve stakeholders in interpreting preliminary results
+- Explore alternative explanations or emerging patterns
 
-## 9. Education, Training & Student Reflection
-- Integrate students in live research cycles
-- Support reflection, documentation, and peer review
-- Assess progress and skill development
+## 9. Interpret, Validate, and Synthesize
+- Link results back to theory, frameworks, and stakeholder needs
+- Validate with advisory groups or co-researchers
+- Draft conclusions, assumptions, and scenario options
+- Co-reflect on meaning and future implications
 
-## 10. Infrastructure & Lab Operations
-- Host, secure, and maintain digital tools
-- Manage users, access control, and uptime
-- Document workflows and update dependencies
+## 10. Communicate and Disseminate
+- Write reports, briefs, and recommendations
+- Produce infographics, dashboards, or decision guides
+- Present to partners, institutions, or conferences
+- Publish findings on GitHub, institutional sites, or public channels
+- Share back with all engaged actors (e.g. via Nextcloud or live session)
 
-## 11. Archiving & Reproducibility
-- Version control of documents, data, and code
-- Maintain access to all past outputs
-- Enable reuse and transparency through open standards
+## 11. Reflect, Archive, and Prepare for Reuse
+- Archive all data, documents, and versions clearly
+- Document what worked and what didn’t (research diary, post-mortem)
+- Identify questions for follow-up or continuation
+- Ensure datasets and methods are licensed for future access
+- Close the loop with stakeholders (e.g. feedback on implementation, impact)
 
 ```mermaid
-graph TD
-    A[Problem Framing & Stakeholder Engagement]
-    B[Literature Review & Conceptual Modeling]
-    C[Research Design & Tooling Setup]
-    D[Data Collection]
-    E[Data Processing & Curation]
-    F[Data Analysis & Synthesis]
-    G[Interpretation & Validation]
-    H[Report Production & Dissemination]
-    I[Education, Training & Student Reflection]
-    J[Infrastructure & Lab Operations]
-    K[Archiving & Reproducibility]
+flowchart TD
+    A[1. Identify & Frame Problem]
+    B[2. Contextualize with Literature & Practice]
+    C[3. Define Objectives & Research Questions]
+    D[4. Design Methodology & Engagement Plan]
+    E[5. Set Up Research Infrastructure]
+    F[6. Collect Data & Engage Stakeholders]
+    G[7. Process & Curate Data]
+    H[8. Analyze Data & Generate Insights]
+    I[9. Interpret, Validate & Synthesize]
+    J[10. Communicate & Disseminate]
+    K[11. Reflect, Archive & Prepare for Reuse]
 
     A --> B
     B --> C
@@ -81,10 +101,8 @@ graph TD
     F --> G
     G --> H
     H --> I
-    I --> K
-    J --> C
+    I --> J
     J --> K
-
 ```
 
 
