@@ -388,6 +388,48 @@ Legend:
 |11. Reflect, Archive & Prepare for Reuse  | ⚠️ OneDrive (weak VC, closed) | ✅ GitHub + Nextcloud backups    | ✅ GitHub repo, vault backups       | ⚠️ GitHub is fine, Discord is ephemeral |
 
 
+
+
+```mermaid
+flowchart TD
+    subgraph Windesheim_Private_Network
+        NC[Nextcloud Suite]
+        N8N[n8n Automation Engine]
+        LO[LibreOffice Server]
+        PG[PostgreSQL Database]
+        VPNC[WireGuard VPN Client]
+        GITM[Internal Git Mirror]
+        NC --> N8N
+        NC --> LO
+        N8N --> PG
+        VPNC --> N8N
+        GITM --> N8N
+    end
+
+    subgraph Public_VPS
+        VPNS[WireGuard VPN Server]
+        RP[Reverse Proxy]
+        RELAY[Webhook and GitHub Relay]
+        VPNS --> RP
+        RP --> RELAY
+    end
+
+    subgraph GitHub
+        GH[GitHub Repos and Pages]
+        GH --> RELAY
+    end
+
+    subgraph Users
+        U1[Researchers and Students]
+        U1 --> GH
+        U1 --> RP
+    end
+
+    RELAY --> VPNC
+```
+
+
+
 VCH-Infra
 
 | Subdomain                                                      | Tool/Service       | Description                                                                 |
