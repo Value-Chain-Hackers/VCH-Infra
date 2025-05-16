@@ -358,9 +358,18 @@ Legend:
 
 ---
 
-Would you like to build a **recommended hybrid** from these now? Or evaluate them against actual **VCH student use cases**?
-
-
+| **Aspect / Criterion**         | **MS Office**                               | **Nextcloud + GitHub**                           | **MS Office + Obsidian + GitHub**                | **MS Office + Discord + GitHub**                     |
+|-------------------------------|---------------------------------------------|--------------------------------------------------|--------------------------------------------------|------------------------------------------------------|
+| **Communication**             | Outlook or Teams (closed, async/sync)       | Nextcloud Talk (limited, open, rarely used)      | No built-in tool (email only)                    | Discord (closed, real-time chat/voice/video)         |
+| **Collaboration**             | Word/Excel (some real-time co-editing)      | Nextcloud Office (real-time co-editing, open)    | Obsidian (local), GitHub (no real-time editing)  | Word/Excel (shared), GitHub (version control)        |
+| **Progress/result sharing**   | Email or OneDrive shared docs               | Nextcloud wikis, GitHub Pages/Wikis              | Obsidian vaults (local), GitHub commits          | GitHub Issues, Office files, Discord threads         |
+| **Monthly cost**              | Covered by Windesheim license               | ~€200/month (self-hosted infra, no support)      | Free (but user-managed)                          | Free (using existing licenses + public tools)        |
+| **Ease of use**               | ✅ Very high (students familiar)             | ⚠️ Moderate (depends on setup, some onboarding)   | ❌ Low (markdown/GitHub knowledge required)       | ⚠️ Medium (easy chat, harder file management)        |
+| **Scalability**               | ⚠️ Limited by MS licensing                  | 📈 High (if well-hosted)                          | ⚠️ Medium (manual syncing, no central control)    | 📈 Medium–High (tools scale, but coordination needed) |
+| **Integration ability**       | ⚠️ Moderate (closed ecosystem)              | ✅ High (GitHub workflows, plugins)               | ✅ Moderate–High (GitHub + markdown)              | ⚠️ Moderate (via Discord bots, GitHub actions)       |
+| **Privacy / Data Control**    | 🚫 Low (hosted by Microsoft)                | ✅ High (self-hosted, open stack)                 | ⚠️ Medium (local control, GitHub cloud risk)      | 🚫 Low (Discord, GitHub = external cloud)            |
+| **Maintenance**               | ✅ Low (managed by Windesheim IT)            | ❌ High (requires admin, updates, security)       | ✅ Low (self-managed local setup)                 | ✅ Low (hosted externally, minimal overhead)          |
+| **Who hosts it**              | Windesheim                                   | Chris / Internal Admin                            | Individual user                                   | Windesheim (Office), others are external platforms   |
 
 VCH-Infra
 
