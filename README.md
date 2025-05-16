@@ -471,6 +471,46 @@ flowchart TD
 
 ```
 
+| **Function**                 | **Recommended Server Specs**                                                    | **Notes**                                                                                               |
+| ---------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| **Nextcloud Core**           | 8 vCPU, 32 GB RAM, 500 GB NVMe SSD, 1 Gbps LAN, Debian 12                       | Handles Deck, Forms, Talk, Files. Heavy IO from uploads, syncing, versioning. Keep internal only.       |
+| **PostgreSQL + Redis**       | 4 vCPU, 16 GB RAM, 100 GB SSD (ZFS or ext4), 1 Gbps LAN                         | Database and cache backend for Nextcloud. Separate to reduce coupling and allow optimization.           |
+| **Collabora Office**         | 6 vCPU, 12 GB RAM, 100 GB SSD, 1 Gbps LAN                                       | Office rendering is CPU-intensive. Must be kept close to Nextcloud (LAN or shared docker network).      |
+| **n8n Automation Server**    | 4 vCPU, 8 GB RAM, 50 GB SSD, 1 Gbps LAN                                         | Workflow automation engine. Handles internal triggers, Git pull, email automations, etc.                |
+| **GitLab (Self-hosted)**     | 8 vCPU, 32 GB RAM, 500 GB SSD (fast NVMe preferred), 1 Gbps LAN                 | Heavy read/write, CI/CD, user management. Self-hosting means full control, but requires serious upkeep. |
+| **JupyterLab / RStudio**     | 8–12 vCPU, 32–64 GB RAM, 250 GB NVMe SSD, optional GPU, 1 Gbps LAN              | Should be separate due to user-executed code and high memory footprint. GPU optional for deep learning. |
+| **Monitoring & Backups**     | 2 vCPU, 4 GB RAM, 250 GB SSD (or access to remote storage), 1 Gbps LAN          | Prometheus, Grafana, Uptime Kuma, log aggregation. Should be isolated and hardened.                     |
+| **VPN / Reverse Proxy Node** | 2 vCPU, 2–4 GB RAM, 50 GB SSD, Public IP, Ubuntu 22.04 or Alpine, 1 Gbps uplink | Public-facing VPS. WireGuard server, reverse proxy (Caddy/nginx). Should be cheap and disposable.       |
+
++---------------------------+
+|     VPS (DO)             |
+|  - WireGuard Server      |
+|  - Caddy Reverse Proxy   |
++------------+-------------+
+             |
+         VPN Tunnel
+             |
++------------v-------------+     +------------------------+
+|   Nextcloud + Collabora  |<--->| PostgreSQL + Redis     |
++--------------------------+     +------------------------+
+
++--------------------------+     +------------------------+
+|        GitLab            |<--->|    n8n Automation      |
++--------------------------+     +------------------------+
+
++--------------------------+     +------------------------+
+| JupyterLab / RStudio     |     | Monitoring + Backups   |
++--------------------------+     +------------------------+
+
+| **Node Name**      | **Primary Role(s)**                              | **Key Services Hosted**                        | **Recommended Hardware**                                                                |
+| ------------------ | ------------------------------------------------ | ---------------------------------------------- | --------------------------------------------------------------------------------------- |
+| `vch-core01`       | Collaboration hub                                | Nextcloud, Collabora Office                    | 12 vCPU, 32 GB RAM, 1 TB NVMe SSD, 1 Gbps NIC, ZFS, ECC RAM                             |
+| `vch-db01`         | Database and cache layer                         | PostgreSQL, Redis                              | 8 vCPU, 32 GB RAM, 500 GB SSD (ZFS mirror), 1 Gbps NIC                                  |
+| `vch-automation01` | Internal automation engine + webhook receiver    | n8n, Git sync logic                            | 4 vCPU, 8 GB RAM, 250 GB SSD, 1 Gbps NIC                                                |
+| `vch-dev01`        | GitLab server (self-hosted)                      | GitLab CE                                      | 12 vCPU, 32–64 GB RAM, 1 TB NVMe SSD, 1 Gbps NIC                                        |
+| `vch-analytics01`  | Research compute node                            | JupyterLab, RStudio                            | 16 vCPU, 64 GB RAM, 1 TB NVMe SSD, 1 Gbps NIC, optional NVIDIA GPU (RTX 3060 or better) |
+| `vch-mon01`        | Monitoring and backups                           | Uptime Kuma, Prometheus, daily snapshot system | 4 vCPU, 8 GB RAM, 1 TB HDD, 1 Gbps NIC                                                  |
+| `vch-gateway01`    | VPN bridge + external proxy (can be offsite VPS) | WireGuard server, Caddy reverse proxy          | 2 vCPU, 2 GB RAM, 50 GB SSD, public IPv4, Ubuntu or Alpine OS                           |
 
 
 VCH-Infra
